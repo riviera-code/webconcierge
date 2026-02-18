@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons Core -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .font-serif { font-family: 'Playfair Display', serif; }
@@ -22,8 +22,18 @@
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom styles for icon containers to ensure correct sizing */
-        .icon-wrapper svg { width: 100%; height: 100%; }
+        .text-shadow-strong {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9);
+        }
+        
+        i[data-lucide] {
+            display: inline-block;
+            line-height: 0;
+        }
+
+        .chat-container {
+            height: calc(100vh - 150px);
+        }
     </style>
 </head>
 <body>
@@ -33,62 +43,56 @@
         const { useState, useEffect, useRef } = React;
         
         /**
-         * Componente Icon corretto per l'uso con Lucide CDN
-         * Converte i nomi CamelCase in kebab-case per mappare le icone di sistema
+         * Componente Icon Fixato (createIcons) - Massima stabilità su GitHub Pages
          */
         const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
-            const iconRef = useRef(null);
+            const ref = useRef(null);
 
             useEffect(() => {
-                if (iconRef.current && window.lucide) {
-                    iconRef.current.innerHTML = '';
-                    // Mappa i nomi comuni usati in lucide-react ai nomi della libreria core
-                    const iconName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-                    const icon = window.lucide.icons[iconName] || window.lucide.icons[name.toLowerCase()];
-                    
-                    if (icon) {
-                        const svg = icon.toSvg({
-                            width: size,
-                            height: size,
-                            class: className,
-                            'stroke-width': strokeWidth
-                        });
-                        iconRef.current.innerHTML = svg;
-                    }
-                }
-            }, [name, size, className, strokeWidth]);
+                const render = () => {
+                    if (!window.lucide || !ref.current) return false;
+                    const lucideName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+                    ref.current.innerHTML = `<i data-lucide="${lucideName}"></i>`;
+                    window.lucide.createIcons({
+                        attrs: { 
+                            width: size, 
+                            height: size, 
+                            "stroke-width": strokeWidth,
+                            class: className 
+                        }
+                    });
+                    return true;
+                };
 
-            return <span ref={iconRef} className={`inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}></span>;
+                if (!render()) {
+                    const t = setInterval(() => { if (render()) clearInterval(t); }, 50);
+                    return () => clearInterval(t);
+                }
+            }, [name, size, strokeWidth, className]);
+
+            return (
+                <span
+                    ref={ref}
+                    className={`inline-flex items-center justify-center ${className}`}
+                    style={{ width: size, height: size }}
+                />
+            );
         };
 
         const App = () => {
             const [activeTab, setActiveTab] = useState('stays');
             const [copySuccess, setCopySuccess] = useState(false);
-            const [messages, setMessages] = useState([
-                { role: 'assistant', text: 'Benvenuto a Bordighera Suite Apartments. Sono il tuo concierge virtuale. Come posso rendere perfetto il tuo soggiorno?' }
-            ]);
-            const [input, setInput] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            const scrollRef = useRef(null);
+            const [showStaffModal, setShowStaffModal] = useState(false);
+            const [pendingMessage, setPendingMessage] = useState("");
 
             const staffPhoneNumber = "393891131311";
-            const apiKey = ""; // Inizializzato vuoto come richiesto
+            const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
 
-            const apartmentsData = {
-                "business": {
-                    "name": "Bordighera Suite Apartments",
-                    "whatsapp": "393891131311"
-                },
-                "wifi": {
-                    "password": "Carducci37c"
-                }
-            };
-
-            useEffect(() => {
-                if (scrollRef.current) {
-                    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-                }
-            }, [messages, isLoading]);
+            const wifiNetworks = [
+                "La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", 
+                "Federico's", "Rosalba's", "Attico con Vista", "The Green Corner"
+            ];
+            const wifiPassword = "Carducci37c";
 
             const copyToClipboard = (text) => {
                 const textArea = document.createElement("textarea");
@@ -105,37 +109,15 @@
                 document.body.removeChild(textArea);
             };
 
-            const askGemini = async (userText) => {
-                const systemInstruction = `Sei il Concierge Digitale di 'Bordighera Suite Apartments'. Usa un tono elegante, sofisticato e professionale. 
-                Info Wi-Fi: Password "${apartmentsData.wifi.password}". Check-out: ore 10:30. Contatto WhatsApp Staff: +${staffPhoneNumber}. 
-                Messaggio per accessori: Spiega che per ragioni di spazio e ordine forniamo Tostapane, Microonde, Aspirapolvere, Ferro e Asse da stiro su richiesta tramite WhatsApp.`;
-
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: userText }] }],
-                            systemInstruction: { parts: [{ text: systemInstruction }] }
-                        })
-                    });
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Mi scusi, sto riscontrando un problema. Può contattare lo staff su WhatsApp.";
-                } catch (error) {
-                    return "Spiacente, contatta lo staff su WhatsApp per assistenza immediata.";
-                }
+            const triggerWhatsApp = (msg) => {
+                setPendingMessage(msg);
+                setShowStaffModal(true);
             };
 
-            const handleSendMessage = async (e) => {
-                e.preventDefault();
-                if (!input.trim() || isLoading) return;
-                const userMsg = input;
-                setInput('');
-                setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-                setIsLoading(true);
-                const response = await askGemini(userMsg);
-                setMessages(prev => [...prev, { role: 'assistant', text: response }]);
-                setIsLoading(false);
+            const confirmWhatsApp = () => {
+                const url = `https://wa.me/${staffPhoneNumber}${pendingMessage ? '?text=' + encodeURIComponent(pendingMessage) : ''}`;
+                window.open(url, '_blank');
+                setShowStaffModal(false);
             };
 
             const ActionCard = ({ iconName, title, subtitle, onClick }) => (
@@ -159,21 +141,20 @@
                     <div className="relative h-80 bg-stone-200 overflow-hidden">
                         <img 
                             src="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg" 
-                            alt="Bordighera Suite Interior" 
+                            alt="Interno Bordighera Suite" 
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#fdfcf8] via-black/10 to-transparent" />
                         <div className="absolute inset-0 flex flex-col justify-end p-8">
-                            <h1 className="text-white font-serif text-3xl font-light drop-shadow-md">Bordighera Suite Apartments</h1>
-                            <p className="text-stone-100 text-sm mt-1 drop-shadow-sm font-medium uppercase tracking-wider">Quality Apartments in Bordighera</p>
+                            <h1 className="text-white font-serif text-3xl font-light text-shadow-strong leading-tight">Bordighera Suite Apartments</h1>
+                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider">Quality Apartments in Bordighera</p>
                         </div>
                     </div>
 
                     <div className="p-6">
                         <div className="mb-10 px-2">
                            <h3 className="font-serif text-2xl text-[#064e3b] mb-3">Benvenuti a Casa</h3>
-                           <p className="text-sm text-stone-600 leading-relaxed">
-                              Siamo felici di avervi come nostri ospiti. Qui troverete tutto il necessario per gestire il vostro soggiorno con facilità ed eleganza.
+                           <p className="text-sm text-stone-600 leading-relaxed italic">
+                              Siamo lieti di avervi come nostri ospiti. In questo spazio digitale troverete tutto il necessario per gestire il vostro soggiorno con facilità, ordine ed eleganza.
                            </p>
                         </div>
                         
@@ -183,7 +164,7 @@
                             <ActionCard iconName="Wifi" title="Connessione Wi-Fi" subtitle="Reti e password unificata" onClick={() => setActiveTab('wifi-detail')} />
                             <ActionCard iconName="Trash2" title="Raccolta Rifiuti" subtitle="Guida alla differenziata locale" onClick={() => setActiveTab('waste-detail')} />
                             <ActionCard iconName="PlusCircle" title="Accessori Extra" subtitle="Tostapane, microonde e altro su richiesta" onClick={() => setActiveTab('extra-detail')} />
-                            <ActionCard iconName="Clock" title="Procedura Check-out" subtitle="Istruzioni per la partenza alle 10:30" onClick={() => setActiveTab('checkout-detail')} />
+                            <ActionCard iconName="Clock" title="Procedura Check-out" subtitle="Istruzioni per la partenza entro le 10:00" onClick={() => setActiveTab('checkout-detail')} />
                         </div>
                     </div>
                 </div>
@@ -191,19 +172,19 @@
 
             const renderExplore = () => (
                 <div className="p-6 pb-32 fade-in">
-                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light">Explore</h1>
-                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri Bordighera</p>
+                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight">Explore</h1>
+                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri il meglio di Bordighera</p>
                     <div className="space-y-10">
-                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg">
+                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
                             <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-8 flex flex-col justify-end">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent p-8 flex flex-col justify-end">
                                 <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">IL BORGO</span>
                                 <h4 className="text-white font-serif text-2xl">Bordighera Alta</h4>
                             </div>
                         </div>
-                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg">
+                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
                             <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-8 flex flex-col justify-end">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent p-8 flex flex-col justify-end">
                                 <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">NATURA</span>
                                 <h4 className="text-white font-serif text-2xl">Giardino Pallanca</h4>
                             </div>
@@ -213,27 +194,19 @@
             );
 
             const renderChat = () => (
-                <div className="flex flex-col h-screen bg-stone-50">
-                    <div className="p-6 bg-white border-b border-stone-100 pt-16">
+                <div className="flex flex-col h-screen bg-white">
+                    <div className="p-6 bg-white border-b border-stone-100 pt-16 shadow-sm">
                         <h2 className="font-serif text-2xl text-[#064e3b]">Concierge AI</h2>
-                        <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Servizio attivo</p>
+                        <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Sempre a vostra disposizione</p>
                     </div>
-                    <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {messages.map((msg, i) => (
-                            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-4 rounded-[24px] text-sm ${msg.role === 'user' ? 'bg-[#064e3b] text-white rounded-tr-none' : 'bg-white text-stone-800 border border-stone-100 rounded-tl-none'}`}>
-                                    {msg.text}
-                                </div>
-                            </div>
-                        ))}
-                        {isLoading && <div className="p-4 bg-white rounded-2xl w-fit border border-stone-100 flex items-center gap-2 text-xs text-stone-400 italic"><Icon name="Loader" size={14} className="animate-spin" /> L'assistente sta scrivendo...</div>}
+                    <div className="flex-1 bg-stone-50 chat-container">
+                        <iframe 
+                            src={tawkChatUrl} 
+                            className="w-full h-full border-none"
+                            title="Tawk.to Chat"
+                        ></iframe>
                     </div>
-                    <div className="p-4 pb-32 bg-white border-t border-stone-100">
-                        <form onSubmit={handleSendMessage} className="flex gap-2">
-                            <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Chiedimi della casa..." className="flex-1 bg-stone-50 border border-stone-200 rounded-full px-6 py-4 text-sm focus:ring-1 focus:ring-[#064e3b] outline-none" />
-                            <button type="submit" disabled={!input.trim() || isLoading} className="bg-[#064e3b] text-white p-4 rounded-full shadow-lg"><Icon name="Send" size={20} /></button>
-                        </form>
-                    </div>
+                    <div className="h-24 bg-white"></div>
                 </div>
             );
 
@@ -249,70 +222,161 @@
                                 <button onClick={() => setActiveTab('stays')} className="flex items-center text-[#064e3b] font-bold mb-10 bg-stone-50 px-4 py-2 rounded-full w-fit">
                                     <Icon name="ChevronLeft" size={18} className="mr-2" /> Indietro
                                 </button>
+                                
                                 {activeTab === 'wifi-detail' && (
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
                                         <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6">
-                                            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Password unificata</p>
-                                            <div className="flex justify-between items-center p-6 bg-[#fdfcf8] rounded-2xl border border-stone-100">
-                                                <span className="font-mono font-bold text-xl text-[#064e3b]">{apartmentsData.wifi.password}</span>
-                                                <button onClick={() => copyToClipboard(apartmentsData.wifi.password)} className="p-3 bg-white rounded-xl shadow-sm"><Icon name="Copy" size={20} className={copySuccess ? "text-green-600" : "text-[#064e3b]"} /></button>
+                                            <div>
+                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4 text-center">Reti disponibili nel palazzo</p>
+                                                <div className="grid grid-cols-1 gap-2">
+                                                    {wifiNetworks.map(net => (
+                                                        <div key={net} className="flex items-center gap-2 p-2 bg-stone-50/50 rounded-lg text-sm text-stone-700">
+                                                            <Icon name="Check" size={14} className="text-green-600" />
+                                                            {net}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <p className="text-xs text-stone-400 italic leading-relaxed">Fibra ottica ad alta velocità disponibile in tutto il palazzo.</p>
+                                            <div className="pt-4 border-t border-stone-100">
+                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 text-center">Password unificata</p>
+                                                <div className="flex justify-between items-center p-6 bg-[#fdfcf8] rounded-2xl border border-stone-100">
+                                                    <span className="font-mono font-bold text-xl text-[#064e3b]">{wifiPassword}</span>
+                                                    <button onClick={() => copyToClipboard(wifiPassword)} className="p-3 bg-white rounded-xl shadow-sm active:scale-90 transition-transform">
+                                                        <Icon name="Copy" size={20} className={copySuccess ? "text-green-600" : "text-[#064e3b]"} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-stone-400 italic text-center">La connessione in fibra ottica è ad alta velocità e gratuita per tutti gli ospiti.</p>
                                         </div>
                                     </div>
                                 )}
+
                                 {activeTab === 'waste-detail' && (
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Rifiuti</h2>
+                                        <p className="text-sm text-stone-500 italic px-2">Vi preghiamo di seguire scrupolosamente le regole della raccolta differenziata.</p>
                                         <div className="space-y-3">
-                                            {['Carta (Blu)', 'Plastica (Giallo)', 'Vetro (Verde)', 'Organico (Marrone)', 'Indifferenziato (Grigio)'].map(item => (
-                                                <div key={item} className="p-5 bg-white border border-stone-100 rounded-[24px] flex items-center gap-4 shadow-sm">
-                                                    <Icon name="Trash2" size={20} className="text-[#064e3b]" />
-                                                    <span className="font-medium text-sm text-stone-700">{item}</span>
+                                            {[
+                                                {l: 'Carta', c: 'Contenitore Blu'},
+                                                {l: 'Plastica & Metalli', c: 'Contenitore Giallo'},
+                                                {l: 'Vetro', c: 'Contenitore Verde'},
+                                                {l: 'Organico / Umido', c: 'Contenitore Marrone'},
+                                                {l: 'Indifferenziato', c: 'Contenitore Grigio'}
+                                            ].map(item => (
+                                                <div key={item.l} className="p-5 bg-white border border-stone-100 rounded-[24px] flex items-center gap-4 shadow-sm">
+                                                    <div className="p-2 bg-stone-50 rounded-xl">
+                                                        <Icon name="Trash2" size={20} className="text-[#064e3b]" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-sm text-stone-700">{item.l}</p>
+                                                        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-tighter">{item.c}</p>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 )}
+
                                 {activeTab === 'extra-detail' && (
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Accessori Extra</h2>
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6">
-                                            <p className="text-sm text-stone-600 italic leading-relaxed">Forniamo questi accessori solo su richiesta degli ospiti per ragioni di spazio e ordine negli appartamenti.</p>
-                                            {['Tostapane', 'Microonde', 'Ferro da stiro', 'Aspirapolvere'].map(item => (
-                                                <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium text-stone-700">
-                                                    <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />
-                                                    {item}
-                                                </div>
-                                            ))}
-                                            <button onClick={() => window.open(`https://wa.me/${staffPhoneNumber}?text=Buongiorno,%20è%20possibile%20avere%20degli%20accessori%20extra?`)} className="w-full py-5 bg-[#25D366] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg">
-                                                <Icon name="Phone" size={20} /> Richiedi ora su WhatsApp
+                                            <p className="text-sm text-stone-600 leading-relaxed italic">
+                                                Per garantire il massimo ordine e ampi spazi negli appartamenti, forniamo queste dotazioni esclusivamente su richiesta.
+                                            </p>
+                                            <div className="space-y-3">
+                                                {['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere'].map(item => (
+                                                    <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium text-stone-700">
+                                                        <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />
+                                                        {item}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <p className="text-xs text-stone-400 text-center font-medium italic">Non esitate a contattarci, siamo a vostra completa disposizione.</p>
+                                            <button 
+                                                onClick={() => triggerWhatsApp("Buongiorno, è possibile avere degli accessori extra?")} 
+                                                className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                                            >
+                                                <Icon name="MessageCircle" size={20} /> Richiedi ora allo staff
                                             </button>
                                         </div>
                                     </div>
                                 )}
+
                                 {activeTab === 'checkout-detail' && (
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Check-out</h2>
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-8">
-                                            <div className="space-y-6 text-stone-700">
+                                            
+                                            <div className="space-y-8 text-stone-700">
+                                                {/* Orario Check-out */}
                                                 <div className="flex gap-5">
-                                                    <Icon name="Clock" size={24} className="text-[#064e3b] mt-1" />
-                                                    <div><p className="font-bold">Entro le 10:30</p><p className="text-xs text-stone-500">Per permettere le pulizie dell'appartamento.</p></div>
+                                                    <Icon name="Clock" size={24} className="text-[#064e3b] mt-1 shrink-0" />
+                                                    <div>
+                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Orario di Partenza</p>
+                                                        <p className="text-sm text-stone-600 leading-relaxed">
+                                                            Il check-out è previsto entro le ore <b>10:00</b>, salvo diverse disposizioni o opzioni di late check-out acquistate in precedenza.
+                                                        </p>
+                                                    </div>
                                                 </div>
+
+                                                {/* Late Check-out */}
                                                 <div className="flex gap-5">
-                                                    <Icon name="Sun" size={24} className="text-[#064e3b] mt-1" />
-                                                    <div><p className="font-bold">Energia & Luci</p><p className="text-xs text-stone-500">Vi preghiamo di spegnere tutte le luci e l'aria condizionata.</p></div>
+                                                    <Icon name="PlusCircle" size={24} className="text-[#064e3b] mt-1 shrink-0" />
+                                                    <div>
+                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Late Check-out</p>
+                                                        <p className="text-sm text-stone-600 leading-relaxed mb-4">
+                                                            È possibile posticipare la partenza in base alla disponibilità (previa conferma dello staff):
+                                                        </p>
+                                                        <div className="bg-stone-50 rounded-2xl p-4 space-y-2 mb-4">
+                                                            <div className="flex justify-between text-xs font-bold border-b border-stone-200 pb-2"><span>Entro le 13:00</span> <span className="text-[#064e3b]">€35</span></div>
+                                                            <div className="flex justify-between text-xs font-bold border-b border-stone-200 pb-2"><span>Entro le 15:00</span> <span className="text-[#064e3b]">€50</span></div>
+                                                            <div className="flex justify-between text-xs font-bold"><span>Entro le 17:00</span> <span className="text-[#064e3b]">€70</span></div>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => triggerWhatsApp("Buongiorno, vorrei verificare la disponibilità per un late check-out.")}
+                                                            className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2"
+                                                        >
+                                                            <Icon name="MessageCircle" size={14} /> Verifica disponibilità con lo staff
+                                                        </button>
+                                                    </div>
                                                 </div>
+
+                                                {/* Deposito Bagagli */}
                                                 <div className="flex gap-5">
-                                                    <Icon name="Key" size={24} className="text-[#064e3b] mt-1" />
-                                                    <div><p className="font-bold">Consegna Chiavi</p><p className="text-xs text-stone-500">Lasciate le chiavi sul tavolo e chiudete la porta alle vostre spalle.</p></div>
+                                                    <Icon name="Briefcase" size={24} className="text-[#064e3b] mt-1 shrink-0" />
+                                                    <div>
+                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Deposito Bagagli</p>
+                                                        <p className="text-sm text-stone-600 leading-relaxed mb-4">
+                                                            Desiderate godervi le ultime ore a Bordighera senza il peso delle valigie? Contattateci per richiedere il servizio deposito.
+                                                        </p>
+                                                        <button 
+                                                            onClick={() => triggerWhatsApp("Buongiorno, desidero richiedere il servizio di deposito bagagli dopo il check-out.")}
+                                                            className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2"
+                                                        >
+                                                            <Icon name="MessageCircle" size={14} /> Contatta lo staff per il deposito
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Modalità Check-out */}
+                                                <div className="flex gap-5">
+                                                    <Icon name="Key" size={24} className="text-[#064e3b] mt-1 shrink-0" />
+                                                    <div>
+                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Procedura Semplificata</p>
+                                                        <p className="text-sm text-stone-600 leading-relaxed">
+                                                            Assicuratevi di aver spento luci e climatizzazione. Lasciate semplicemente i mazzi di chiavi all'interno dell'appartamento e chiudete la porta tirandola fermamente alle vostre spalle.
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <button className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg">
-                                                <Icon name="ExternalLink" size={18} /> Lascia una recensione
-                                            </button>
+
+                                            <div className="pt-6 border-t border-stone-50">
+                                                <button className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                                                    <Icon name="ExternalLink" size={18} /> Lascia una recensione
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -320,24 +384,52 @@
                         )}
                     </main>
 
+                    {/* Barra di Navigazione */}
                     <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-stone-100 px-6 pt-4 pb-10 flex justify-between items-center z-[100]">
-                        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 ${activeTab === 'explore' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="MapPin" size={24} strokeWidth={activeTab === 'explore' ? 2.5 : 2} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest">ESPLORA</span>
+                        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'explore' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                            <Icon name="MapPin" size={24} strokeWidth={2.5} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">ESPLORA</span>
                         </button>
-                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 ${activeTab === 'stays' || (['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && activeTab !== 'chat') ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="BookOpen" size={24} strokeWidth={activeTab === 'stays' ? 2.5 : 2} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest">SOGGIORNO</span>
+                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'stays' || (['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && activeTab !== 'chat') ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                            <Icon name="BookOpen" size={24} strokeWidth={2.5} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">SOGGIORNO</span>
                         </button>
-                        <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-2 ${activeTab === 'chat' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="MessageSquare" size={24} strokeWidth={activeTab === 'chat' ? 2.5 : 2} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest">CONCIERGE</span>
+                        <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'chat' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                            <Icon name="MessageSquare" size={24} strokeWidth={2.5} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">CONCIERGE</span>
                         </button>
-                        <button onClick={() => window.open(`https://wa.me/${staffPhoneNumber}`)} className="flex flex-col items-center gap-2 text-stone-300">
-                            <Icon name="Phone" size={24} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest">STAFF</span>
+                        <button onClick={() => triggerWhatsApp("Buongiorno, vi contatto dal vostro Web Concierge per assistenza.")} className="flex flex-col items-center gap-2 text-stone-300 active:text-[#064e3b]">
+                            <Icon name="Phone" size={24} strokeWidth={2.5} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">STAFF</span>
                         </button>
                     </nav>
+
+                    {/* Modal Staff Universale */}
+                    {showStaffModal && (
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
+                            <div className="bg-white rounded-[32px] p-8 w-full max-w-xs shadow-2xl text-center">
+                                <div className="w-16 h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-[#25D366]">
+                                    <Icon name="MessageCircle" size={32} />
+                                </div>
+                                <h3 className="font-serif text-xl text-[#064e3b] mb-2">Contatta lo Staff</h3>
+                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">Vuoi aprire WhatsApp per inviare questa richiesta al nostro team?</p>
+                                <div className="space-y-3">
+                                    <button 
+                                        onClick={confirmWhatsApp}
+                                        className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-transform"
+                                    >
+                                        Sì, procedi
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowStaffModal(false)}
+                                        className="w-full py-4 text-stone-400 font-bold active:scale-95 transition-transform uppercase text-xs tracking-widest"
+                                    >
+                                        Annulla
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
