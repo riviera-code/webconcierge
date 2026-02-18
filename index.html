@@ -3,7 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bordighera Suite Apartments - Web Concierge</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Concierge Digitale - Bordighera Suite Apartments</title>
+    <meta name="title" content="Concierge Digitale - Bordighera Suite Apartments">
+    <meta name="description" content="Il tuo assistente personale per un soggiorno perfetto a Bordighera. Informazioni Wi-Fi, gestione rifiuti, accessori extra e Concierge AI.">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://riviera-code.github.io/webconcierge/">
+    <meta property="og:title" content="Concierge Digitale - Bordighera Suite Apartments">
+    <meta property="og:description" content="Gestisci il tuo soggiorno in totale autonomia. Info utili, servizi extra e assistenza immediata.">
+    <meta property="og:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://riviera-code.github.io/webconcierge/">
+    <meta property="twitter:title" content="Concierge Digitale - Bordighera Suite Apartments">
+    <meta property="twitter:description" content="Gestisci il tuo soggiorno in totale autonomia. Info utili, servizi extra e assistenza immediata.">
+    <meta property="twitter:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -14,6 +33,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
         .font-serif { font-family: 'Playfair Display', serif; }
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #fdfcf8; }
@@ -176,7 +196,7 @@
                            </p>
                         </div>
                         
-                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2">SERVIZI IN APPARTAMENTO</h3>
+                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2 text-center sm:text-left">SERVIZI IN APPARTAMENTO</h3>
                         
                         <div className="space-y-1">
                             <ActionCard iconName="Wifi" title="Connessione Wi-Fi" subtitle="Reti e password unificata" onClick={() => setActiveTab('wifi-detail')} />
@@ -190,8 +210,8 @@
 
             const renderExplore = () => (
                 <div className="p-6 pb-32 fade-in">
-                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight">Explore</h1>
-                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri il meglio di Bordighera</p>
+                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight text-center sm:text-left">Explore</h1>
+                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px] text-center sm:text-left">Scopri il meglio di Bordighera</p>
                     <div className="space-y-10">
                         <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
                             <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" className="w-full h-full object-cover" />
@@ -279,7 +299,7 @@
                                     <div className="space-y-8 pb-10 text-stone-700">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Gestione Rifiuti</h2>
                                         
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800">
                                             <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" />
                                             <div className="p-8 space-y-4">
                                                 <h3 className="font-bold text-lg text-stone-900 leading-tight">Separare i rifiuti domestici</h3>
@@ -295,7 +315,7 @@
                                             </div>
                                         </div>
 
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800">
                                             <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
                                             <div className="p-8 space-y-4">
                                                 <h3 className="font-bold text-lg text-stone-900 leading-tight">Trasporto all’Isola Ecologica</h3>
@@ -326,7 +346,15 @@
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6 text-stone-800">
                                             <p className="text-sm text-stone-600 leading-relaxed italic text-center">Dotazioni fornite esclusivamente su richiesta per garantire massimi spazi e ordine.</p>
                                             <div className="space-y-3">
-                                                {['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere', 'Culla e seggiolone per bimbi', 'Caffettiera moka', 'Attrezzatura aggiuntiva cucina'].map(item => (
+                                                {[
+                                                    'Tostapane', 
+                                                    'Microonde', 
+                                                    'Ferro e asse da stiro', 
+                                                    'Aspirapolvere', 
+                                                    'Culla e seggiolone per bimbi', 
+                                                    'Caffettiera moka', 
+                                                    'Attrezzatura aggiuntiva cucina'
+                                                ].map(item => (
                                                     <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium">
                                                         <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />{item}
                                                     </div>
