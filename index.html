@@ -1,1 +1,380 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Wifi, 
+  Trash2, 
+  MessageSquare, 
+  Phone, 
+  MapPin, 
+  ChevronRight, 
+  ChevronLeft,
+  Copy, 
+  ExternalLink,
+  Home,
+  BookOpen,
+  Clock,
+  Key,
+  CheckCircle2,
+  PlusCircle,
+  Send
+} from 'lucide-react';
 
+const App = () => {
+  const [activeTab, setActiveTab] = useState('stays');
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: 'assistant', text: 'Benvenuto a Bordighera Suite Apartments. Sono il tuo concierge virtuale. Desideri informazioni su un appartamento specifico o vuoi prenotare un soggiorno?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef(null);
+
+  const staffPhoneNumber = "393891131311";
+  const apiKey = ""; 
+
+  const trainingData = {
+    wifi: {
+      password: "Carducci37c",
+      networks: ["La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", "Federico's", "Rosalba's", "Attico con Vista", "The Green Corner"]
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isLoading]);
+
+  const copyToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Copy error', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  const askGemini = async (userText) => {
+    const systemInstruction = `
+      Sei il Concierge Digitale di 'Bordighera Suite Apartments'. 
+      Usa i dati del file bordighera_suite_ai_training.json (già caricati in memoria).
+      - Wi-Fi Password: "${trainingData.wifi.password}"
+      - Check-out: ore 10:30.
+      - Staff WhatsApp: +${staffPhoneNumber}.
+      - Tono: Elegante, caloroso, professionale.
+    `;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: userText }] }],
+          systemInstruction: { parts: [{ text: systemInstruction }] }
+        })
+      });
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text;
+    } catch (error) {
+      return "Spiacente, contatta lo staff su WhatsApp per assistenza immediata.";
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    const userMsg = input;
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setIsLoading(true);
+    const response = await askGemini(userMsg);
+    setMessages(prev => [...prev, { role: 'assistant', text: response }]);
+    setIsLoading(false);
+  };
+
+  const ActionCard = ({ icon: Icon, title, subtitle, onClick }) => (
+    <button 
+      onClick={onClick}
+      className="w-full flex items-center p-5 bg-white rounded-[24px] border border-stone-100 shadow-sm hover:shadow-md transition-all group active:scale-[0.98] mb-4"
+    >
+      <div className="p-3 bg-stone-50 rounded-2xl text-[#064e3b] group-hover:bg-[#064e3b] group-hover:text-white transition-colors">
+        <Icon size={24} />
+      </div>
+      <div className="ml-5 text-left flex-1">
+        <h4 className="font-bold text-[15px] text-stone-900">{title}</h4>
+        <p className="text-xs text-stone-500 mt-0.5">{subtitle}</p>
+      </div>
+      <ChevronRight size={18} className="text-stone-300" />
+    </button>
+  );
+
+  const renderStays = () => (
+    <div className="pb-32 animate-in fade-in duration-500 overflow-x-hidden">
+      {/* Hero Header with Background Image */}
+      <div className="relative h-80 bg-stone-200 overflow-hidden">
+        <img 
+          src="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg" 
+          alt="Bordighera Suite Interior" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#fdfcf8] via-black/10 to-transparent" />
+        <div className="absolute inset-0 flex flex-col justify-end p-8">
+          <h1 className="text-white font-serif text-3xl font-light drop-shadow-md">Bordighera Suite Apartments</h1>
+          <p className="text-stone-100 text-sm mt-1 drop-shadow-sm font-medium">Quality Apartments in Bordighera</p>
+        </div>
+      </div>
+
+      {/* Welcome Section */}
+      <div className="p-6">
+        <div className="mb-10 px-2">
+           <h3 className="font-serif text-2xl text-[#064e3b] mb-3">Benvenuti a Casa</h3>
+           <p className="text-sm text-stone-600 leading-relaxed">
+              Siamo felici di avervi come nostri ospiti. Qui troverete tutto il necessario per gestire il vostro soggiorno con facilità ed eleganza.
+           </p>
+        </div>
+        
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2">SERVIZI IN APPARTAMENTO</h3>
+        
+        <div className="space-y-1">
+          <ActionCard 
+            icon={Wifi} 
+            title="Connessione Wi-Fi" 
+            subtitle="Reti e password unificata" 
+            onClick={() => setActiveTab('wifi-detail')} 
+          />
+          <ActionCard 
+            icon={Trash2} 
+            title="Raccolta Rifiuti" 
+            subtitle="Guida alla differenziata locale" 
+            onClick={() => setActiveTab('waste-detail')} 
+          />
+          <ActionCard 
+            icon={PlusCircle} 
+            title="Accessori Extra" 
+            subtitle="Tostapane, microonde e altro su richiesta" 
+            onClick={() => setActiveTab('extra-detail')} 
+          />
+          <ActionCard 
+            icon={Clock} 
+            title="Procedura Check-out" 
+            subtitle="Istruzioni per la partenza alle 10:30" 
+            onClick={() => setActiveTab('checkout-detail')} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderExplore = () => (
+    <div className="p-6 pb-32 animate-in fade-in duration-500">
+      <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight">Explore</h1>
+      <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri Bordighera</p>
+      
+      <div className="space-y-10">
+        {[
+          { title: "Bordighera Alta", cat: "IL BORGO", img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" },
+          { title: "Giardino Pallanca", cat: "NATURA", img: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600" }
+        ].map((item, idx) => (
+          <div key={idx} className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
+            <img src={item.img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-8 flex flex-col justify-end">
+              <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">{item.cat}</span>
+              <h4 className="text-white font-serif text-2xl">{item.title}</h4>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderChat = () => (
+    <div className="flex flex-col h-screen bg-stone-50">
+      <div className="p-6 bg-white border-b border-stone-100 pt-16">
+        <h2 className="font-serif text-2xl text-[#064e3b]">Concierge AI</h2>
+        <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Servizio attivo</p>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[85%] p-4 rounded-[24px] text-sm ${
+              msg.role === 'user' 
+                ? 'bg-[#064e3b] text-white rounded-tr-none shadow-md' 
+                : 'bg-white text-stone-800 rounded-tl-none border border-stone-100 shadow-sm'
+            }`}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-white p-4 rounded-[24px] rounded-tl-none border border-stone-100 flex gap-1">
+              <div className="w-1.5 h-1.5 bg-stone-300 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-stone-300 rounded-full animate-bounce [animation-delay:0.2s]" />
+              <div className="w-1.5 h-1.5 bg-stone-300 rounded-full animate-bounce [animation-delay:0.4s]" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 pb-32 bg-white border-t border-stone-100">
+        <form onSubmit={handleSendMessage} className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Chiedimi della casa o dei locali..."
+            className="flex-1 bg-stone-50 border border-stone-200 rounded-full px-6 py-4 text-sm focus:ring-1 focus:ring-[#064e3b] outline-none"
+          />
+          <button type="submit" disabled={!input.trim() || isLoading} className="bg-[#064e3b] text-white p-4 rounded-full shadow-lg disabled:opacity-50">
+            <Send size={20} />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#fdfcf8] text-stone-900 font-sans max-w-md mx-auto relative shadow-2xl overflow-hidden">
+      
+      <main className="min-h-screen">
+        {activeTab === 'stays' && renderStays()}
+        {activeTab === 'explore' && renderExplore()}
+        {activeTab === 'chat' && renderChat()}
+        
+        {['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && (
+          <div className="p-6 pt-12 pb-32 animate-in slide-in-from-right duration-300 min-h-screen">
+            <button onClick={() => setActiveTab('stays')} className="flex items-center text-[#064e3b] font-bold mb-10 bg-stone-50 px-4 py-2 rounded-full w-fit">
+              <ChevronLeft size={18} className="mr-2" /> Indietro
+            </button>
+            
+            {activeTab === 'wifi-detail' && (
+              <div className="space-y-6">
+                <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
+                <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6">
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Password unificata</p>
+                    <div className="flex justify-between items-center p-6 bg-[#fdfcf8] rounded-2xl border border-stone-100">
+                      <span className="font-mono font-bold text-xl text-[#064e3b] tracking-tighter">{trainingData.wifi.password}</span>
+                      <button onClick={() => copyToClipboard(trainingData.wifi.password)} className="p-3 hover:bg-white rounded-xl transition-colors shadow-sm bg-white">
+                        <Copy size={20} className={copySuccess ? "text-green-600" : "text-[#064e3b]"} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-stone-400 leading-relaxed italic">Fibra ottica ad alta velocità disponibile in tutti gli appartamenti del complesso.</p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'waste-detail' && (
+                <div className="space-y-6">
+                    <h2 className="font-serif text-3xl text-[#064e3b]">Rifiuti</h2>
+                    <div className="space-y-3">
+                        {['Carta (Blu)', 'Plastica & Metalli (Giallo)', 'Vetro (Verde)', 'Organico (Marrone)', 'Indifferenziato (Grigio)'].map((item, idx) => (
+                            <div key={idx} className="p-5 bg-white border border-stone-100 rounded-[24px] flex items-center gap-4 shadow-sm">
+                                <Trash2 size={20} className="text-[#064e3b]" />
+                                <span className="font-medium text-sm text-stone-700">{item}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'extra-detail' && (
+              <div className="space-y-6">
+                <h2 className="font-serif text-3xl text-[#064e3b]">Accessori Extra</h2>
+                <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6">
+                    <p className="text-sm text-stone-600 leading-relaxed italic">Per ragioni di spazio e ordine negli appartamenti, forniamo questi accessori solo su richiesta degli ospiti.</p>
+                    <div className="grid grid-cols-1 gap-3">
+                        {['Tostapane', 'Forno a microonde', 'Ferro e asse da stiro', 'Aspirapolvere'].map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium text-stone-700">
+                                <CheckCircle2 size={18} className="text-[#064e3b]" />
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-xs text-stone-400 text-center font-medium italic">Non esitate a chiedere.</p>
+                    <button 
+                        onClick={() => window.open(`https://wa.me/${staffPhoneNumber}?text=Buongiorno,%20è%20possibile%20avere%20degli%20accessori%20extra?`, '_blank')}
+                        className="w-full py-5 bg-[#25D366] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg hover:brightness-95 transition-all"
+                    >
+                        <Phone size={20} fill="white" /> Richiedi ora su WhatsApp
+                    </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'checkout-detail' && (
+              <div className="space-y-6">
+                 <h2 className="font-serif text-3xl text-[#064e3b]">Check-out</h2>
+                 <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-8">
+                    <div className="space-y-6">
+                        <div className="flex items-start gap-5">
+                            <Clock size={24} className="shrink-0 text-[#064e3b] mt-1" />
+                            <div>
+                                <p className="font-bold text-stone-900">Entro le 10:30</p>
+                                <p className="text-xs text-stone-500 mt-1">Vi preghiamo di rispettare l'orario per permettere le pulizie.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-5">
+                            <Sun size={24} className="shrink-0 text-[#064e3b] mt-1" />
+                            <div>
+                                <p className="font-bold text-stone-900">Elettricità</p>
+                                <p className="text-xs text-stone-500 mt-1">Spegnete aria condizionata e tutte le luci.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-5">
+                            <Key size={24} className="shrink-0 text-[#064e3b] mt-1" />
+                            <div>
+                                <p className="font-bold text-stone-900">Chiavi</p>
+                                <p className="text-xs text-stone-500 mt-1">Lasciate le chiavi sul tavolo e chiudete la porta.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg">
+                        <ExternalLink size={18} /> Lascia una recensione
+                    </button>
+                 </div>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* Navigation Bar - SONER STYLE */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-stone-100 px-6 pt-4 pb-10 flex justify-between items-center z-[100]">
+        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'explore' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+          <MapPin size={24} strokeWidth={activeTab === 'explore' ? 2.5 : 2} />
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em]">ESPLORA</span>
+        </button>
+        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'stays' || (['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && activeTab !== 'chat') ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+          <BookOpen size={24} strokeWidth={activeTab === 'stays' ? 2.5 : 2} />
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em]">SOGGIORNO</span>
+        </button>
+        <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'chat' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+          <MessageSquare size={24} strokeWidth={activeTab === 'chat' ? 2.5 : 2} />
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em]">CONCIERGE</span>
+        </button>
+        <button onClick={() => window.open(`https://wa.me/${staffPhoneNumber}`)} className="flex flex-col items-center gap-2 text-stone-300">
+          <Phone size={24} />
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em]">STAFF</span>
+        </button>
+      </nav>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        .font-serif { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
+    </div>
+  );
+};
+
+export default App;
