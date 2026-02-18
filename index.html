@@ -34,6 +34,10 @@
         .chat-container {
             height: calc(100vh - 150px);
         }
+
+        .map-shadow {
+            box-shadow: 0 10px 30px -10px rgba(6, 78, 59, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -82,11 +86,11 @@
         const App = () => {
             const [activeTab, setActiveTab] = useState('stays');
             const [copySuccess, setCopySuccess] = useState(false);
-            const [showStaffModal, setShowStaffModal] = useState(false);
-            const [pendingMessage, setPendingMessage] = useState("");
+            const [externalModal, setExternalModal] = useState({ show: false, type: '', url: '', title: '', message: '' });
 
             const staffPhoneNumber = "393891131311";
             const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
+            const mapsUrl = "https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9";
 
             const wifiNetworks = [
                 "La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", 
@@ -110,14 +114,28 @@
             };
 
             const triggerWhatsApp = (msg) => {
-                setPendingMessage(msg);
-                setShowStaffModal(true);
+                setExternalModal({
+                    show: true,
+                    type: 'whatsapp',
+                    url: `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(msg)}`,
+                    title: 'Contatta lo Staff',
+                    message: 'Sei sicuro di voler aprire WhatsApp per inviare questa richiesta al nostro team?'
+                });
             };
 
-            const confirmWhatsApp = () => {
-                const url = `https://wa.me/${staffPhoneNumber}${pendingMessage ? '?text=' + encodeURIComponent(pendingMessage) : ''}`;
-                window.open(url, '_blank');
-                setShowStaffModal(false);
+            const triggerMaps = () => {
+                setExternalModal({
+                    show: true,
+                    type: 'maps',
+                    url: mapsUrl,
+                    title: 'Apri Navigatore',
+                    message: 'Vuoi uscire dall\'app per aprire la posizione dell\'Isola Ecologica su Google Maps?'
+                });
+            };
+
+            const confirmExternal = () => {
+                window.open(externalModal.url, '_blank');
+                setExternalModal({ ...externalModal, show: false });
             };
 
             const ActionCard = ({ iconName, title, subtitle, onClick }) => (
@@ -152,9 +170,9 @@
 
                     <div className="p-6">
                         <div className="mb-10 px-2">
-                           <h3 className="font-serif text-2xl text-[#064e3b] mb-3">Benvenuti a Casa</h3>
-                           <p className="text-sm text-stone-600 leading-relaxed italic">
-                              Siamo lieti di avervi come nostri ospiti. In questo spazio digitale troverete tutto il necessario per gestire il vostro soggiorno con facilità, ordine ed eleganza.
+                           <h3 className="font-serif text-2xl text-[#064e3b] mb-3 text-center">Benvenuti a Casa</h3>
+                           <p className="text-sm text-stone-600 leading-relaxed italic text-center">
+                              Inizia il soggiorno con eleganza. Troverai qui tutto il necessario per una permanenza all'insegna del comfort e della sostenibilità.
                            </p>
                         </div>
                         
@@ -162,7 +180,7 @@
                         
                         <div className="space-y-1">
                             <ActionCard iconName="Wifi" title="Connessione Wi-Fi" subtitle="Reti e password unificata" onClick={() => setActiveTab('wifi-detail')} />
-                            <ActionCard iconName="Trash2" title="Raccolta Rifiuti" subtitle="Guida alla differenziata locale" onClick={() => setActiveTab('waste-detail')} />
+                            <ActionCard iconName="Trash2" title="Raccolta Rifiuti" subtitle="Guida alla differenziata domestica" onClick={() => setActiveTab('waste-detail')} />
                             <ActionCard iconName="PlusCircle" title="Accessori Extra" subtitle="Tostapane, microonde e altro su richiesta" onClick={() => setActiveTab('extra-detail')} />
                             <ActionCard iconName="Clock" title="Procedura Check-out" subtitle="Istruzioni per la partenza entro le 10:00" onClick={() => setActiveTab('checkout-detail')} />
                         </div>
@@ -197,7 +215,7 @@
                 <div className="flex flex-col h-screen bg-white">
                     <div className="p-6 bg-white border-b border-stone-100 pt-16 shadow-sm">
                         <h2 className="font-serif text-2xl text-[#064e3b]">Concierge AI</h2>
-                        <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Sempre a vostra disposizione</p>
+                        <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">Powered by Tawk.to</p>
                     </div>
                     <div className="flex-1 bg-stone-50 chat-container">
                         <iframe 
@@ -226,9 +244,9 @@
                                 {activeTab === 'wifi-detail' && (
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
-                                        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6">
+                                        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6 text-center">
                                             <div>
-                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4 text-center">Reti disponibili nel palazzo</p>
+                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4">Reti del Palazzo</p>
                                                 <div className="grid grid-cols-1 gap-2">
                                                     {wifiNetworks.map(net => (
                                                         <div key={net} className="flex items-center gap-2 p-2 bg-stone-50/50 rounded-lg text-sm text-stone-700">
@@ -247,33 +265,64 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <p className="text-xs text-stone-400 italic text-center">La connessione in fibra ottica è ad alta velocità e gratuita per tutti gli ospiti.</p>
                                         </div>
                                     </div>
                                 )}
 
                                 {activeTab === 'waste-detail' && (
-                                    <div className="space-y-6">
-                                        <h2 className="font-serif text-3xl text-[#064e3b]">Rifiuti</h2>
-                                        <p className="text-sm text-stone-500 italic px-2">Vi preghiamo di seguire scrupolosamente le regole della raccolta differenziata.</p>
-                                        <div className="space-y-3">
-                                            {[
-                                                {l: 'Carta', c: 'Contenitore Blu'},
-                                                {l: 'Plastica & Metalli', c: 'Contenitore Giallo'},
-                                                {l: 'Vetro', c: 'Contenitore Verde'},
-                                                {l: 'Organico / Umido', c: 'Contenitore Marrone'},
-                                                {l: 'Indifferenziato', c: 'Contenitore Grigio'}
-                                            ].map(item => (
-                                                <div key={item.l} className="p-5 bg-white border border-stone-100 rounded-[24px] flex items-center gap-4 shadow-sm">
-                                                    <div className="p-2 bg-stone-50 rounded-xl">
-                                                        <Icon name="Trash2" size={20} className="text-[#064e3b]" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-bold text-sm text-stone-700">{item.l}</p>
-                                                        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-tighter">{item.c}</p>
-                                                    </div>
+                                    <div className="space-y-8 pb-10 text-stone-700">
+                                        <h2 className="font-serif text-3xl text-[#064e3b]">Gestione Rifiuti</h2>
+                                        
+                                        {/* Blocco 1: Separazione */}
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                            <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" />
+                                            <div className="p-8 space-y-4">
+                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Separare i rifiuti domestici</h3>
+                                                <p className="text-sm text-stone-500 leading-relaxed italic">
+                                                    Inizia la tua pratica eco-sostenibile sin da subito durante il soggiorno.
+                                                </p>
+                                                <p className="text-sm leading-relaxed text-stone-600">
+                                                    I rifiuti devono essere divisi nei seguenti contenitori etichettati, posizionati <b>sotto il lavello della cucina, in un angolo dedicato o sul terrazzo</b>:
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-2 mt-4">
+                                                    {['Plastica e lattine', 'Vetro', 'Carta', 'Organico', 'Indifferenziato'].map(item => (
+                                                        <div key={item} className="flex items-center gap-2 p-2 bg-stone-50 rounded-xl text-[11px] font-bold uppercase tracking-tight text-stone-500">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#064e3b]" />
+                                                            {item}
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Blocco 2: Isola Ecologica */}
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                            <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
+                                            <div className="p-8 space-y-4">
+                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Conferimento all’Isola Ecologica</h3>
+                                                <p className="text-sm leading-relaxed text-stone-600">
+                                                    Quando i contenitori in casa sono pieni, vi preghiamo di portare i sacchetti all’isola ecologica. Troverete sempre sacchi di ricambio disponibili in suite.
+                                                </p>
+                                                <div className="p-4 bg-orange-50 rounded-2xl text-[12px] text-orange-800 leading-relaxed font-medium">
+                                                    <b>Soggiorni Brevi:</b> Non preoccupatevi, se il vostro soggiorno è breve il nostro staff si occuperà dello smaltimento per voi.
+                                                </div>
+                                                
+                                                <div className="pt-4 space-y-4 text-center">
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Localizzazione</h4>
+                                                    <div className="w-full h-48 rounded-[32px] overflow-hidden map-shadow">
+                                                        <iframe 
+                                                            src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" 
+                                                            className="w-full h-full border-none opacity-80 hover:opacity-100 transition-opacity"
+                                                        ></iframe>
+                                                    </div>
+                                                    <button 
+                                                        onClick={triggerMaps}
+                                                        className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
+                                                    >
+                                                        <Icon name="Map" size={20} /> Apri Google Maps
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -282,11 +331,19 @@
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Accessori Extra</h2>
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6">
-                                            <p className="text-sm text-stone-600 leading-relaxed italic">
-                                                Per garantire il massimo ordine e ampi spazi negli appartamenti, forniamo queste dotazioni esclusivamente su richiesta.
+                                            <p className="text-sm text-stone-600 leading-relaxed italic text-center">
+                                                Per garantire il massimo ordine e ampi spazi negli appartamenti, forniamo queste dotazioni esclusivamente su richiesta degli ospiti.
                                             </p>
                                             <div className="space-y-3">
-                                                {['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere'].map(item => (
+                                                {[
+                                                    'Tostapane', 
+                                                    'Microonde', 
+                                                    'Ferro e asse da stiro', 
+                                                    'Aspirapolvere',
+                                                    'Culla e seggiolone per bimbi',
+                                                    'Caffettiera moka',
+                                                    'Attrezzatura aggiuntiva per la cucina'
+                                                ].map(item => (
                                                     <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium text-stone-700">
                                                         <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />
                                                         {item}
@@ -298,7 +355,7 @@
                                                 onClick={() => triggerWhatsApp("Buongiorno, è possibile avere degli accessori extra?")} 
                                                 className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all"
                                             >
-                                                <Icon name="MessageCircle" size={20} /> Richiedi ora allo staff
+                                                <Icon name="MessageCircle" size={20} /> Richiedi allo staff
                                             </button>
                                         </div>
                                     </div>
@@ -338,7 +395,7 @@
                                                             onClick={() => triggerWhatsApp("Buongiorno, vorrei verificare la disponibilità per un late check-out.")}
                                                             className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2"
                                                         >
-                                                            <Icon name="MessageCircle" size={14} /> Verifica disponibilità con lo staff
+                                                            <Icon name="MessageCircle" size={14} /> Verifica disponibilità
                                                         </button>
                                                     </div>
                                                 </div>
@@ -349,13 +406,13 @@
                                                     <div>
                                                         <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Deposito Bagagli</p>
                                                         <p className="text-sm text-stone-600 leading-relaxed mb-4">
-                                                            Desiderate godervi le ultime ore a Bordighera senza il peso delle valigie? Contattateci per richiedere il servizio deposito.
+                                                            Desiderate godervi le ultime ore a Bordighera senza il peso delle valigie? Contattateci per richiedere il servizio deposito post check-out.
                                                         </p>
                                                         <button 
                                                             onClick={() => triggerWhatsApp("Buongiorno, desidero richiedere il servizio di deposito bagagli dopo il check-out.")}
                                                             className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2"
                                                         >
-                                                            <Icon name="MessageCircle" size={14} /> Contatta lo staff per il deposito
+                                                            <Icon name="MessageCircle" size={14} /> Contatta lo staff
                                                         </button>
                                                     </div>
                                                 </div>
@@ -404,24 +461,24 @@
                         </button>
                     </nav>
 
-                    {/* Modal Staff Universale */}
-                    {showStaffModal && (
+                    {/* Modal Universale per Link Esterni (WhatsApp & Maps) */}
+                    {externalModal.show && (
                         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
                             <div className="bg-white rounded-[32px] p-8 w-full max-w-xs shadow-2xl text-center">
-                                <div className="w-16 h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-[#25D366]">
-                                    <Icon name="MessageCircle" size={32} />
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${externalModal.type === 'maps' ? 'bg-blue-100 text-blue-600' : 'bg-[#25D366]/10 text-[#25D366]'}`}>
+                                    <Icon name={externalModal.type === 'maps' ? "Map" : "MessageCircle"} size={32} />
                                 </div>
-                                <h3 className="font-serif text-xl text-[#064e3b] mb-2">Contatta lo Staff</h3>
-                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">Vuoi aprire WhatsApp per inviare questa richiesta al nostro team?</p>
+                                <h3 className="font-serif text-xl text-[#064e3b] mb-2 uppercase tracking-tight">{externalModal.title}</h3>
+                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">{externalModal.message}</p>
                                 <div className="space-y-3">
                                     <button 
-                                        onClick={confirmWhatsApp}
+                                        onClick={confirmExternal}
                                         className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-transform"
                                     >
                                         Sì, procedi
                                     </button>
                                     <button 
-                                        onClick={() => setShowStaffModal(false)}
+                                        onClick={() => setExternalModal({ ...externalModal, show: false })}
                                         className="w-full py-4 text-stone-400 font-bold active:scale-95 transition-transform uppercase text-xs tracking-widest"
                                     >
                                         Annulla
