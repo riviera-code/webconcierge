@@ -52,7 +52,8 @@
         }
 
         .chat-container {
-            height: calc(100vh - 150px);
+            /* Fix mobile height handling browser URL bars */
+            height: calc(100dvh - 150px);
         }
 
         .map-shadow {
@@ -107,10 +108,12 @@
             const [activeTab, setActiveTab] = useState('stays');
             const [copySuccess, setCopySuccess] = useState(false);
             const [externalModal, setExternalModal] = useState({ show: false, type: '', url: '', title: '', message: '' });
+            const [showReviewModal, setShowReviewModal] = useState(false);
 
             const staffPhoneNumber = "393891131311";
             const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
             const mapsUrl = "https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9";
+            const googleReviewUrl = "https://g.page/r/CSI2adO9stnNEAE/review";
 
             const wifiNetworks = [
                 "La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", 
@@ -182,9 +185,9 @@
                             alt="Interno Bordighera Suite" 
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex flex-col justify-end p-8">
+                        <div className="absolute inset-0 flex flex-col justify-end p-8 text-center sm:text-left">
                             <h1 className="text-white font-serif text-3xl font-light text-shadow-strong leading-tight">Bordighera Suite Apartments</h1>
-                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider text-center">Quality Apartments in Bordighera</p>
+                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider">Quality Apartments in Bordighera</p>
                         </div>
                     </div>
 
@@ -237,7 +240,7 @@
                         <h2 className="font-serif text-2xl text-[#064e3b]">Concierge AI</h2>
                         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Powered by Bordighera Suite Apartments</p>
                     </div>
-                    <div className="flex-1 bg-stone-50 chat-container">
+                    <div className="flex-1 bg-stone-50 chat-container overflow-hidden">
                         <iframe 
                             src={tawkChatUrl} 
                             className="w-full h-full border-none"
@@ -257,7 +260,7 @@
                         
                         {['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && (
                             <div className="p-6 pt-12 pb-32 fade-in min-h-screen">
-                                {/* Pulsante Indietro Elegante (Stesso stile dei box) */}
+                                {/* Pulsante Indietro Elegante */}
                                 <button 
                                     onClick={() => setActiveTab('stays')} 
                                     className="flex items-center gap-2 px-5 py-3 bg-white rounded-[24px] border border-stone-100 shadow-sm hover:shadow-md transition-all group active:scale-[0.95] mb-10 text-[#064e3b]"
@@ -267,15 +270,15 @@
                                 </button>
                                 
                                 {activeTab === 'wifi-detail' && (
-                                    <div className="space-y-6">
+                                    <div className="space-y-6 text-stone-800">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
-                                        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6 text-center text-stone-800">
+                                        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6 text-center">
                                             <div>
                                                 <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4">Reti del Palazzo</p>
-                                                <div className="grid grid-cols-1 gap-2">
+                                                <div className="grid grid-cols-1 gap-2 text-left sm:text-center">
                                                     {wifiNetworks.map(net => (
-                                                        <div key={net} className="flex items-center gap-2 p-2 bg-stone-50/50 rounded-lg text-sm text-stone-700">
-                                                            <Icon name="Check" size={14} className="text-green-600" />
+                                                        <div key={net} className="flex items-center gap-2 p-2 bg-stone-50/50 rounded-lg text-sm">
+                                                            <Icon name="Check" size={14} className="text-green-600 shrink-0" />
                                                             {net}
                                                         </div>
                                                     ))}
@@ -320,10 +323,10 @@
                                             <div className="p-8 space-y-4">
                                                 <h3 className="font-bold text-lg text-stone-900 leading-tight">Trasporto all’Isola Ecologica</h3>
                                                 <p className="text-sm leading-relaxed text-stone-600">Quando i contenitori in casa sono pieni, vi preghiamo di conferire i sacchetti all’isola ecologica. Sacchi di ricambio sono disponibili in suite.</p>
-                                                <div className="p-4 bg-orange-50 rounded-2xl text-[12px] text-orange-800 leading-relaxed font-medium">
+                                                <div className="p-4 bg-orange-50 rounded-2xl text-[12px] text-orange-800 leading-relaxed font-medium text-center sm:text-left">
                                                     <b>Soggiorni Brevi:</b> Non preoccupatevi, se il vostro soggiorno è breve il nostro staff provvederà allo smaltimento.
                                                 </div>
-                                                <div className="pt-4 space-y-4 text-center text-stone-800">
+                                                <div className="pt-4 space-y-4 text-center">
                                                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Localizzazione</h4>
                                                     <div className="w-full h-48 rounded-[32px] overflow-hidden map-shadow">
                                                         <iframe 
@@ -331,7 +334,7 @@
                                                             className="w-full h-full border-none opacity-80"
                                                         ></iframe>
                                                     </div>
-                                                    <button onClick={triggerMaps} className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                                                    <button onClick={triggerMaps} className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all uppercase tracking-wider text-xs">
                                                         <Icon name="Map" size={20} /> Apri Google Maps
                                                     </button>
                                                 </div>
@@ -413,7 +416,10 @@
                                                 </div>
                                             </div>
                                             <div className="pt-6 border-t border-stone-50">
-                                                <button className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                                                <button 
+                                                    onClick={() => setShowReviewModal(true)} 
+                                                    className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
+                                                >
                                                     <Icon name="ExternalLink" size={18} /> Lascia una recensione
                                                 </button>
                                             </div>
@@ -444,7 +450,7 @@
                         </button>
                     </nav>
 
-                    {/* Modal Conferma */}
+                    {/* Modal Conferma WhatsApp / Maps */}
                     {externalModal.show && (
                         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
                             <div className="bg-white rounded-[32px] p-8 w-full max-w-xs shadow-2xl text-center border border-stone-100">
@@ -456,6 +462,52 @@
                                 <div className="space-y-3">
                                     <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-transform">Sì, procedi</button>
                                     <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-xs tracking-widest">Annulla</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Recensione - Fix Stelle Unicode */}
+                    {showReviewModal && (
+                        <div className="fixed inset-0 z-[210] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
+                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh] text-stone-800">
+                                <div className="flex justify-end mb-2">
+                                    <button onClick={() => setShowReviewModal(false)} className="text-stone-300 p-2"><Icon name="X" size={24} /></button>
+                                </div>
+                                <div className="text-center space-y-6">
+                                    <h3 className="font-serif text-2xl text-[#064e3b] leading-tight italic">Grazie per aver scelto Bordighera Suite Apartments</h3>
+                                    
+                                    <p className="text-xs text-stone-500 leading-relaxed italic">
+                                        Speriamo che il tuo rientro a casa sia stato piacevole e che il soggiorno abbia risposto alle tue aspettative.
+                                        Siamo una piccola realtà e cerchiamo costantemente di migliorare. Se ti sei trovato bene, ci farebbe davvero piacere ricevere il tuo supporto.
+                                    </p>
+
+                                    <div className="py-6 border-y border-stone-50 space-y-4 text-center">
+                                        <p className="text-sm font-bold uppercase tracking-widest text-[#064e3b]">Ti sei trovato a tuo agio?</p>
+                                        <div className="flex justify-center gap-1 text-orange-400 text-3xl leading-none py-2">
+                                            {'★★★★★'}
+                                        </div>
+                                        <button 
+                                            onClick={() => { window.open(googleReviewUrl, '_blank'); setShowReviewModal(false); }}
+                                            className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="CheckCircle2" size={18} /> Lascia 5 stelle su Google
+                                        </button>
+                                        <p className="text-[10px] text-stone-400 font-medium italic">È il modo più veloce per aiutarci!</p>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 text-center">
+                                        <p className="text-xs font-bold text-stone-900 leading-tight">Qualcosa non è stato perfetto?</p>
+                                        <p className="text-[11px] text-stone-500 leading-relaxed">
+                                            Se hai suggerimenti o criticità, contattaci direttamente. La tua opinione privata è fondamentale per noi.
+                                        </p>
+                                        <button 
+                                            onClick={() => { triggerWhatsApp("Buongiorno, vorrei lasciarvi un suggerimento privato riguardo il mio soggiorno..."); setShowReviewModal(false); }}
+                                            className="text-xs font-bold text-[#064e3b] underline uppercase tracking-widest active:opacity-50 transition-opacity"
+                                        >
+                                            Inviaci un suggerimento privato
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
