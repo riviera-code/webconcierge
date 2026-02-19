@@ -7,21 +7,14 @@
     <!-- Primary Meta Tags -->
     <title>Concierge Digitale - Bordighera Suite Apartments</title>
     <meta name="title" content="Concierge Digitale - Bordighera Suite Apartments">
-    <meta name="description" content="Il tuo assistente personale per un soggiorno perfetto a Bordighera. Informazioni Wi-Fi, gestione rifiuti, accessori extra e Concierge AI.">
+    <meta name="description" content="Il tuo assistente personale per un soggiorno perfetto a Bordighera. Informazioni Wi-Fi, gestione rifiuti, ristoranti consigliati e Concierge AI.">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://riviera-code.github.io/webconcierge/">
     <meta property="og:title" content="Concierge Digitale - Bordighera Suite Apartments">
-    <meta property="og:description" content="Gestisci il tuo soggiorno in totale autonomia. Info utili, servizi extra e assistenza immediata.">
+    <meta property="og:description" content="Gestisci il tuo soggiorno in totale autonomia. Ristoranti consigliati, info utili e assistenza immediata.">
     <meta property="og:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://riviera-code.github.io/webconcierge/">
-    <meta property="twitter:title" content="Concierge Digitale - Bordighera Suite Apartments">
-    <meta property="twitter:description" content="Gestisci il tuo soggiorno in totale autonomia. Info utili, servizi extra e assistenza immediata.">
-    <meta property="twitter:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,7 +45,6 @@
         }
 
         .chat-container {
-            /* Fix mobile height handling browser URL bars */
             height: calc(100dvh - 150px);
         }
 
@@ -112,7 +104,6 @@
 
             const staffPhoneNumber = "393891131311";
             const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
-            const mapsUrl = "https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9";
             const googleReviewUrl = "https://g.page/r/CSI2adO9stnNEAE/review";
 
             const wifiNetworks = [
@@ -120,6 +111,43 @@
                 "Federico's", "Rosalba's", "Attico con Vista", "The Green Corner"
             ];
             const wifiPassword = "Carducci37c";
+
+            const restaurants = [
+                {
+                    category: "Sul mare / Lungomare",
+                    icon: "Waves",
+                    items: [
+                        { name: "Maoma Beach", comment: "Personale gentile e simpatico, locale informale sul mare con ottimo rapporto qualità/prezzo.", address: "Lungomare Argentina, 11, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/uXpX8WqR9n9L1zXj6" },
+                        { name: "Paolo e Guido al Marina Beach", comment: "Rilassato, ottima cucina, perfetto a pranzo in una giornata di sole.", address: "Lungomare Argentina, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
+                        { name: "Playa Argentina", comment: "Aperto di giorno, locale informale con ottima pizza e piatti leggeri.", address: "Lungomare Argentina, 23, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
+                        { name: "Amarea Ristorante Romolo Mare", comment: "Un classico a Bordighera: ottima cucina e grande dehor da godersi nelle belle giornate.", address: "Lungomare Argentina, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
+                        { name: "Bagni Caranca", comment: "Locale informale sul mare, perfetto per pranzo o per un aperitivo al sole.", address: "Lungomare Argentina, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" }
+                    ]
+                },
+                {
+                    category: "Bordighera Alta (Centro Storico)",
+                    icon: "Castle",
+                    items: [
+                        { name: "Magiargè", comment: "Osteria con cucina ligure genuina e cantina curata. Uno dei posti più autentici del centro storico. Prenotazione consigliata.", address: "Via Dritta, 2, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/K6V8X8W8X8W8X8W" },
+                        { name: "U Cavetu | Osteria della Pineta", comment: "Cucina di ottima qualità firmata dal giovane chef Oscar Martinelli, immerso nella pineta di Bordighera Alta. Ottima cantina.", address: "Via Avv. F. Rossi, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Ristorante Del Capo", comment: "Cucina di livello in una location suggestiva di Bordighera Alta.", address: "Via Al Capo, 4, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "La Gritta Bordigotta", comment: "Ristorantino incastonato nel centro storico, piatti locali con ottimo rapporto qualità/prezzo.", address: "Piazza del Popolo, 24, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Ristorante Pizzeria La Piazzetta", comment: "Nel cuore del centro storico, ottima pizza napoletana.", address: "Piazza del Popolo, 15, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Piccolo Bistrot Gourmet", comment: "Pittoresco locale in stile napoletano, ideale per aperitivo o qualcosa di leggero. Staff accogliente.", address: "Via Dritta, 10, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Novantiqua", comment: "Nel cuore di Bordighera Alta, cocktail ricercati, ampia cantina e cucina fusion raffinata.", address: "Via Lunga, 2, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Ristorante A Scibretta", comment: "Localino dove gustare i migliori raviolini liguri della tradizione.", address: "Via Bastioni, 93, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" }
+                    ]
+                },
+                {
+                    category: "Nei dintorni",
+                    icon: "Car",
+                    items: [
+                        { name: "Iride³ Gastrobar (Vallecrosia)", comment: "Cucina creativa mai banale. Bellissimo locale nel centro del paese.", address: "Via Colonnello Aprosio, 258, 18019 Vallecrosia IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "Ristorante Il Giardino (Vallebona)", comment: "Cucina ligure tradizionale, locale vecchio stile amatissimo dai residenti.", address: "Piazza della Libertà, 3, 18012 Vallebona IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
+                        { name: "ITER Vallebona", comment: "Un unico tavolo per 8 posti. Un rituale gastronomico con cura maniacale del dettaglio.", address: "Piazza XX Settembre, 17, 18012 Vallebona IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" }
+                    ]
+                }
+            ];
 
             const copyToClipboard = (text) => {
                 const textArea = document.createElement("textarea");
@@ -146,13 +174,13 @@
                 });
             };
 
-            const triggerMaps = () => {
+            const triggerMaps = (url, name) => {
                 setExternalModal({
                     show: true,
                     type: 'maps',
-                    url: mapsUrl,
+                    url: url,
                     title: 'Apri Navigatore',
-                    message: 'Vuoi uscire dall\'app per aprire la posizione dell\'Isola Ecologica su Google Maps?'
+                    message: `Vuoi uscire dall'app per vedere la posizione di "${name}" su Google Maps?`
                 });
             };
 
@@ -187,19 +215,19 @@
                         />
                         <div className="absolute inset-0 flex flex-col justify-end p-8 text-center sm:text-left">
                             <h1 className="text-white font-serif text-3xl font-light text-shadow-strong leading-tight">Bordighera Suite Apartments</h1>
-                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider">Quality Apartments in Bordighera</p>
+                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider text-center">Quality Apartments in Bordighera</p>
                         </div>
                     </div>
 
                     <div className="p-6">
-                        <div className="mb-10 px-2">
-                           <h3 className="font-serif text-2xl text-[#064e3b] mb-3 text-center">Benvenuti a Casa</h3>
-                           <p className="text-sm text-stone-600 leading-relaxed italic text-center">
-                              Inizia il soggiorno con eleganza. Troverai qui tutto il necessario per una permanenza all'insegna del comfort e della sostenibilità.
+                        <div className="mb-10 px-2 text-center">
+                           <h3 className="font-serif text-2xl text-[#064e3b] mb-3">Benvenuti a Casa</h3>
+                           <p className="text-sm text-stone-600 leading-relaxed italic">
+                              Siamo lieti di avervi come nostri ospiti. Inizia il soggiorno con eleganza e scopri i servizi a tua disposizione.
                            </p>
                         </div>
                         
-                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2 text-center sm:text-left">SERVIZI IN APPARTAMENTO</h3>
+                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2">SERVIZI IN APPARTAMENTO</h3>
                         
                         <div className="space-y-1">
                             <ActionCard iconName="Wifi" title="Connessione Wi-Fi" subtitle="Reti e password unificata" onClick={() => setActiveTab('wifi-detail')} />
@@ -213,19 +241,39 @@
 
             const renderExplore = () => (
                 <div className="p-6 pb-32 fade-in">
-                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight text-center sm:text-left">Explore</h1>
-                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px] text-center sm:text-left">Scopri il meglio di Bordighera</p>
-                    <div className="space-y-10">
-                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
-                            <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent p-8 flex flex-col justify-end">
-                                <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">IL BORGO</span>
-                                <h4 className="text-white font-serif text-2xl">Bordighera Alta</h4>
+                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight">Explore</h1>
+                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri Bordighera</p>
+                    
+                    <div className="space-y-6">
+                        {/* Bordighera Alta Card */}
+                        <button 
+                            onClick={() => setActiveTab('alta-detail')}
+                            className="w-full relative h-64 rounded-[40px] overflow-hidden shadow-lg group"
+                        >
+                            <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Bordighera Alta" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-left">
+                                <span className="text-xs font-bold text-white/90 tracking-widest uppercase mb-1">IL BORGO MEDIEVALE</span>
+                                <h4 className="text-white font-serif text-2xl text-shadow-strong">Bordighera Alta</h4>
                             </div>
-                        </div>
-                        <div className="relative h-64 rounded-[40px] overflow-hidden shadow-lg group">
-                            <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent p-8 flex flex-col justify-end">
+                        </button>
+
+                        {/* Ristoranti Card */}
+                        <button 
+                            onClick={() => setActiveTab('restaurants-detail')}
+                            className="w-full relative h-48 rounded-[40px] overflow-hidden shadow-lg group"
+                        >
+                            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Ristoranti" />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
+                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-left">
+                                <span className="text-xs font-bold text-white/90 tracking-widest uppercase mb-1">ENOGASTRONOMIA</span>
+                                <h4 className="text-white font-serif text-2xl text-shadow-strong">Ristoranti Consigliati</h4>
+                            </div>
+                        </button>
+
+                        <div className="relative h-48 rounded-[40px] overflow-hidden shadow-lg group">
+                            <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-black/40 p-8 flex flex-col justify-end">
                                 <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">NATURA</span>
                                 <h4 className="text-white font-serif text-2xl">Giardino Pallanca</h4>
                             </div>
@@ -258,17 +306,149 @@
                         {activeTab === 'explore' && renderExplore()}
                         {activeTab === 'chat' && renderChat()}
                         
-                        {['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && (
+                        {['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail', 'restaurants-detail', 'alta-detail'].includes(activeTab) && (
                             <div className="p-6 pt-12 pb-32 fade-in min-h-screen">
-                                {/* Pulsante Indietro Elegante */}
                                 <button 
-                                    onClick={() => setActiveTab('stays')} 
+                                    onClick={() => setActiveTab(['restaurants-detail', 'alta-detail'].includes(activeTab) ? 'explore' : 'stays')} 
                                     className="flex items-center gap-2 px-5 py-3 bg-white rounded-[24px] border border-stone-100 shadow-sm hover:shadow-md transition-all group active:scale-[0.95] mb-10 text-[#064e3b]"
                                 >
                                     <Icon name="ChevronLeft" size={20} strokeWidth={2.5} /> 
                                     <span className="font-bold text-sm tracking-tight uppercase">Indietro</span>
                                 </button>
                                 
+                                {activeTab === 'alta-detail' && (
+                                    <div className="space-y-8 pb-10 text-stone-700">
+                                        <div className="px-2">
+                                            <h2 className="font-serif text-3xl text-[#064e3b] leading-tight italic">Bordighera Alta<br/><span className="text-xl text-stone-400 not-italic font-sans font-bold uppercase tracking-widest">Il Borgo Medievale</span></h2>
+                                        </div>
+
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                            <img src="https://images.unsplash.com/photo-1548123282-086381664724?w=600" className="w-full h-64 object-cover" />
+                                            <div className="p-8 space-y-6">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="p-4 bg-stone-50 rounded-3xl">
+                                                        <Icon name="Clock" size={18} className="text-[#064e3b] mb-2" />
+                                                        <p className="text-[10px] font-bold uppercase text-stone-400">Tempo</p>
+                                                        <p className="text-xs font-bold">1–2 ore</p>
+                                                    </div>
+                                                    <div className="p-4 bg-stone-50 rounded-3xl">
+                                                        <Icon name="Map" size={18} className="text-[#064e3b] mb-2" />
+                                                        <p className="text-[10px] font-bold uppercase text-stone-400">Distanza</p>
+                                                        <p className="text-xs font-bold">10 min a piedi</p>
+                                                    </div>
+                                                </div>
+
+                                                <section className="space-y-3">
+                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Perché visitarlo</h3>
+                                                    <p className="text-sm leading-relaxed">
+                                                        Bordighera Alta è il cuore antico della città. Mentre il lungomare racconta l'Ottocento cosmopolita, il borgo medievale parla di una storia più profonda: una comunità sopravvissuta ai Saraceni che ha saputo conquistare la propria indipendenza.
+                                                        Le mura pentagonali reggono ancora e i carruggi sono gli stessi che stregarono <b>Claude Monet</b> nel 1884.
+                                                    </p>
+                                                </section>
+
+                                                <section className="space-y-3">
+                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Le tre porte di accesso</h3>
+                                                    <ul className="text-sm space-y-3">
+                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta Sottana (Ovest):</b> la più antica, risalente al 1470.</p></li>
+                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta Soprana (Est):</b> della Maddalena, aperta nel 1780.</p></li>
+                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta del Capo (Sud):</b> seicentesca.</p></li>
+                                                    </ul>
+                                                    <div className="p-4 bg-[#fdfcf8] border border-stone-100 rounded-2xl italic text-xs">
+                                                        Consiglio: Entra da una porta ed esci da un'altra. Rallenta e guarda in alto: ogni angolo nasconde un segreto.
+                                                    </div>
+                                                </section>
+
+                                                <img src="https://images.unsplash.com/photo-1596434431526-25807187c331?w=600" className="w-full h-48 object-cover rounded-3xl" />
+
+                                                <section className="space-y-3">
+                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Cosa vedere</h3>
+                                                    <div className="space-y-4">
+                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
+                                                            <p className="font-bold text-sm">Piazza del Popolo</p>
+                                                            <p className="text-xs">Custodisce la Chiesa di Santa Maria Maddalena. Il suo campanile in origine era una torre di avvistamento difensiva.</p>
+                                                        </div>
+                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
+                                                            <p className="font-bold text-sm">Oratorio di San Bartolomeo</p>
+                                                            <p className="text-xs">Qui nel 1686 si proclamò la "Magnifica Comunità degli Otto Luoghi", sancendo l'indipendenza da Ventimiglia.</p>
+                                                        </div>
+                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
+                                                            <p className="font-bold text-sm">Sentiero del Beodo</p>
+                                                            <p className="text-xs">Ricalca l'antico acquedotto. Charles Garnier lo definì "una delle passeggiate più entusiasmanti". Monet vi dipinse palme e ulivi.</p>
+                                                        </div>
+                                                    </div>
+                                                </section>
+
+                                                <div className="pt-6 border-t border-stone-50 space-y-6">
+                                                    <h3 className="font-serif text-xl text-[#064e3b]">Dove mangiare nel borgo</h3>
+                                                    <div className="space-y-4">
+                                                        {restaurants[1].items.map((res, i) => (
+                                                            <div key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-3xl">
+                                                                <div className="flex-1">
+                                                                    <p className="font-bold text-sm text-stone-900">{res.name}</p>
+                                                                    <p className="text-[10px] text-stone-400 font-medium">Cucina tipica & Gourmet</p>
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => triggerMaps(res.maps, res.name)}
+                                                                    className="p-2 text-[#064e3b] hover:bg-white rounded-full transition-all"
+                                                                >
+                                                                    <Icon name="Map" size={20} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-6 bg-[#064e3b] text-white rounded-[32px] space-y-2">
+                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 text-center">Curiosità</p>
+                                                    <p className="text-xs text-center leading-relaxed">
+                                                        Bordighera è l'unico comune italiano autorizzato a fornire le palme al Vaticano per la Domenica delle Palme dal XVI secolo. Partono proprio da qui!
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 'restaurants-detail' && (
+                                    <div className="space-y-10 pb-10">
+                                        <div className="px-2">
+                                            <h2 className="font-serif text-3xl text-[#064e3b]">Bordighera</h2>
+                                            <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mt-1">Ristoranti Consigliati</p>
+                                        </div>
+
+                                        {restaurants.map((cat, idx) => (
+                                            <div key={idx} className="space-y-4">
+                                                <h3 className="flex items-center gap-2 font-serif text-xl text-stone-800 px-2">
+                                                    <Icon name={cat.icon} size={20} className="text-[#064e3b]" />
+                                                    {cat.category}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {cat.items.map((res, i) => (
+                                                        <div key={i} className="bg-white rounded-[32px] p-6 border border-stone-100 shadow-sm space-y-4">
+                                                            <div>
+                                                                <h4 className="font-bold text-stone-900 text-lg leading-tight">{res.name}</h4>
+                                                                <p className="text-xs text-[#064e3b] font-medium mt-1 italic leading-relaxed">"{res.comment}"</p>
+                                                            </div>
+                                                            <div className="pt-2 border-t border-stone-50 space-y-3">
+                                                                <div className="flex items-start gap-2 text-[11px] text-stone-400 leading-tight">
+                                                                    <Icon name="MapPin" size={14} className="shrink-0 mt-0.5" />
+                                                                    <span>{res.address}</span>
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => triggerMaps(res.maps, res.name)}
+                                                                    className="w-full py-3 bg-stone-50 text-[#064e3b] rounded-2xl text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-stone-100 transition-colors"
+                                                                >
+                                                                    <Icon name="Map" size={14} /> Vedi su Google Maps
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
                                 {activeTab === 'wifi-detail' && (
                                     <div className="space-y-6 text-stone-800">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
@@ -318,26 +498,14 @@
                                             </div>
                                         </div>
 
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800">
+                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800 text-center">
                                             <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
                                             <div className="p-8 space-y-4">
-                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Trasporto all’Isola Ecologica</h3>
-                                                <p className="text-sm leading-relaxed text-stone-600">Quando i contenitori in casa sono pieni, vi preghiamo di conferire i sacchetti all’isola ecologica. Sacchi di ricambio sono disponibili in suite.</p>
-                                                <div className="p-4 bg-orange-50 rounded-2xl text-[12px] text-orange-800 leading-relaxed font-medium text-center sm:text-left">
-                                                    <b>Soggiorni Brevi:</b> Non preoccupatevi, se il vostro soggiorno è breve il nostro staff provvederà allo smaltimento.
+                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Isola Ecologica</h3>
+                                                <div className="w-full h-48 rounded-[32px] overflow-hidden map-shadow">
+                                                    <iframe src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" className="w-full h-full border-none"></iframe>
                                                 </div>
-                                                <div className="pt-4 space-y-4 text-center">
-                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Localizzazione</h4>
-                                                    <div className="w-full h-48 rounded-[32px] overflow-hidden map-shadow">
-                                                        <iframe 
-                                                            src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" 
-                                                            className="w-full h-full border-none opacity-80"
-                                                        ></iframe>
-                                                    </div>
-                                                    <button onClick={triggerMaps} className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all uppercase tracking-wider text-xs">
-                                                        <Icon name="Map" size={20} /> Apri Google Maps
-                                                    </button>
-                                                </div>
+                                                <button onClick={() => triggerMaps("https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9", "Isola Ecologica")} className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-all uppercase tracking-wider text-xs">Apri Maps</button>
                                             </div>
                                         </div>
                                     </div>
@@ -349,24 +517,13 @@
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6 text-stone-800">
                                             <p className="text-sm text-stone-600 leading-relaxed italic text-center">Dotazioni fornite esclusivamente su richiesta per garantire massimi spazi e ordine.</p>
                                             <div className="space-y-3">
-                                                {[
-                                                    'Tostapane', 
-                                                    'Microonde', 
-                                                    'Ferro e asse da stiro', 
-                                                    'Aspirapolvere', 
-                                                    'Culla e seggiolone per bimbi', 
-                                                    'Caffettiera moka', 
-                                                    'Attrezzatura aggiuntiva cucina'
-                                                ].map(item => (
+                                                {['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere', 'Culla e seggiolone', 'Caffettiera moka', 'Attrezzatura cucina'].map(item => (
                                                     <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium">
                                                         <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />{item}
                                                     </div>
                                                 ))}
                                             </div>
-                                            <p className="text-xs text-stone-400 text-center font-medium italic">Siamo a vostra completa disposizione.</p>
-                                            <button onClick={() => triggerWhatsApp("Buongiorno, è possibile avere degli accessori extra?")} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all">
-                                                <Icon name="MessageCircle" size={20} /> Richiedi allo staff
-                                            </button>
+                                            <button onClick={() => triggerWhatsApp("Buongiorno, è possibile avere degli accessori extra?")} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">Richiedi allo staff</button>
                                         </div>
                                     </div>
                                 )}
@@ -375,54 +532,12 @@
                                     <div className="space-y-6">
                                         <h2 className="font-serif text-3xl text-[#064e3b]">Check-out</h2>
                                         <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-8 text-stone-700">
-                                            <div className="space-y-8">
-                                                <div className="flex gap-5">
-                                                    <Icon name="Clock" size={24} className="text-[#064e3b] mt-1 shrink-0" />
-                                                    <div>
-                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Orario di Partenza</p>
-                                                        <p className="text-sm text-stone-600 leading-relaxed">Il check-out è previsto entro le ore <b>10:00</b>.</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-5">
-                                                    <Icon name="PlusCircle" size={24} className="text-[#064e3b] mt-1 shrink-0" />
-                                                    <div>
-                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Late Check-out</p>
-                                                        <div className="bg-stone-50 rounded-2xl p-4 space-y-2 mb-4">
-                                                            <div className="flex justify-between text-xs font-bold border-b border-stone-200 pb-2"><span>Entro le 13:00</span> <span className="text-[#064e3b]">€35</span></div>
-                                                            <div className="flex justify-between text-xs font-bold border-b border-stone-200 pb-2"><span>Entro le 15:00</span> <span className="text-[#064e3b]">€50</span></div>
-                                                            <div className="flex justify-between text-xs font-bold"><span>Entro le 17:00</span> <span className="text-[#064e3b]">€70</span></div>
-                                                        </div>
-                                                        <button onClick={() => triggerWhatsApp("Buongiorno, vorrei verificare la disponibilità per un late check-out.")} className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2">
-                                                            <Icon name="MessageCircle" size={14} /> Verifica disponibilità
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-5">
-                                                    <Icon name="Briefcase" size={24} className="text-[#064e3b] mt-1 shrink-0" />
-                                                    <div>
-                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Deposito Bagagli</p>
-                                                        <p className="text-sm text-stone-600 mb-4 leading-relaxed">Servizio disponibile post check-out su richiesta.</p>
-                                                        <button onClick={() => triggerWhatsApp("Buongiorno, desidero richiedere il deposito bagagli.")} className="text-xs font-bold text-[#064e3b] border border-[#064e3b] px-4 py-2 rounded-full hover:bg-[#064e3b] hover:text-white transition-all flex items-center gap-2">
-                                                            <Icon name="MessageCircle" size={14} /> Contatta lo staff
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-5">
-                                                    <Icon name="Key" size={24} className="text-[#064e3b] mt-1 shrink-0" />
-                                                    <div>
-                                                        <p className="font-bold text-stone-900 uppercase text-xs tracking-widest mb-1">Procedura Semplificata</p>
-                                                        <p className="text-sm text-stone-600 leading-relaxed">Spegnete luci e aria condizionata. Lasciate i mazzi di chiavi all'interno e chiudete la porta tirandola fermamente.</p>
-                                                    </div>
-                                                </div>
+                                            <div className="space-y-8 text-sm">
+                                                <div className="flex gap-4"><Icon name="Clock" className="text-[#064e3b]" /> <p>Check-out previsto entro le ore <b>10:00</b>.</p></div>
+                                                <div className="flex gap-4"><Icon name="Briefcase" className="text-[#064e3b]" /> <p>Deposito bagagli disponibile post-partenza su richiesta.</p></div>
+                                                <div className="flex gap-4"><Icon name="Key" className="text-[#064e3b]" /> <p>Lasciare le chiavi sul tavolo e chiudete la porta.</p></div>
                                             </div>
-                                            <div className="pt-6 border-t border-stone-50">
-                                                <button 
-                                                    onClick={() => setShowReviewModal(true)} 
-                                                    className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
-                                                >
-                                                    <Icon name="ExternalLink" size={18} /> Lascia una recensione
-                                                </button>
-                                            </div>
+                                            <button onClick={() => setShowReviewModal(true)} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">Lascia una recensione</button>
                                         </div>
                                     </div>
                                 )}
@@ -432,11 +547,11 @@
 
                     {/* Navigation Bar */}
                     <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-stone-100 px-6 pt-4 pb-10 flex justify-between items-center z-[100]">
-                        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'explore' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 transition-colors ${['explore', 'restaurants-detail', 'alta-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
                             <Icon name="MapPin" size={24} strokeWidth={2.5} />
                             <span className="text-[9px] font-bold uppercase tracking-widest text-center">ESPLORA</span>
                         </button>
-                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'stays' || (['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) && activeTab !== 'chat') ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${['stays', 'wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
                             <Icon name="BookOpen" size={24} strokeWidth={2.5} />
                             <span className="text-[9px] font-bold uppercase tracking-widest text-center">SOGGIORNO</span>
                         </button>
@@ -458,7 +573,7 @@
                                     <Icon name={externalModal.type === 'maps' ? "Map" : "MessageCircle"} size={32} />
                                 </div>
                                 <h3 className="font-serif text-xl text-[#064e3b] mb-2 uppercase tracking-tight">{externalModal.title}</h3>
-                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">{externalModal.message}</p>
+                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic text-center px-2">{externalModal.message}</p>
                                 <div className="space-y-3">
                                     <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-transform">Sì, procedi</button>
                                     <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-xs tracking-widest">Annulla</button>
@@ -467,48 +582,23 @@
                         </div>
                     )}
 
-                    {/* Modal Recensione - Fix Stelle Unicode */}
+                    {/* Modal Recensione */}
                     {showReviewModal && (
                         <div className="fixed inset-0 z-[210] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
-                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh] text-stone-800">
-                                <div className="flex justify-end mb-2">
-                                    <button onClick={() => setShowReviewModal(false)} className="text-stone-300 p-2"><Icon name="X" size={24} /></button>
+                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh] text-stone-800 text-center space-y-6">
+                                <h3 className="font-serif text-2xl text-[#064e3b] leading-tight italic">Grazie per aver scelto Bordighera Suite Apartments</h3>
+                                <div className="py-6 border-y border-stone-50 space-y-4">
+                                    <p className="text-sm font-bold uppercase tracking-widest text-[#064e3b]">Ti sei trovato a tuo agio?</p>
+                                    <div className="flex justify-center gap-1 text-orange-400 text-3xl leading-none py-2">{'★★★★★'}</div>
+                                    <button onClick={() => window.open(googleReviewUrl, '_blank')} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+                                        <Icon name="CheckCircle2" size={18} /> Lascia 5 stelle su Google
+                                    </button>
                                 </div>
-                                <div className="text-center space-y-6">
-                                    <h3 className="font-serif text-2xl text-[#064e3b] leading-tight italic">Grazie per aver scelto Bordighera Suite Apartments</h3>
-                                    
-                                    <p className="text-xs text-stone-500 leading-relaxed italic">
-                                        Speriamo che il tuo rientro a casa sia stato piacevole e che il soggiorno abbia risposto alle tue aspettative.
-                                        Siamo una piccola realtà e cerchiamo costantemente di migliorare. Se ti sei trovato bene, ci farebbe davvero piacere ricevere il tuo supporto.
-                                    </p>
-
-                                    <div className="py-6 border-y border-stone-50 space-y-4 text-center">
-                                        <p className="text-sm font-bold uppercase tracking-widest text-[#064e3b]">Ti sei trovato a tuo agio?</p>
-                                        <div className="flex justify-center gap-1 text-orange-400 text-3xl leading-none py-2">
-                                            {'★★★★★'}
-                                        </div>
-                                        <button 
-                                            onClick={() => { window.open(googleReviewUrl, '_blank'); setShowReviewModal(false); }}
-                                            className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
-                                        >
-                                            <Icon name="CheckCircle2" size={18} /> Lascia 5 stelle su Google
-                                        </button>
-                                        <p className="text-[10px] text-stone-400 font-medium italic">È il modo più veloce per aiutarci!</p>
-                                    </div>
-
-                                    <div className="space-y-4 pt-4 text-center">
-                                        <p className="text-xs font-bold text-stone-900 leading-tight">Qualcosa non è stato perfetto?</p>
-                                        <p className="text-[11px] text-stone-500 leading-relaxed">
-                                            Se hai suggerimenti o criticità, contattaci direttamente. La tua opinione privata è fondamentale per noi.
-                                        </p>
-                                        <button 
-                                            onClick={() => { triggerWhatsApp("Buongiorno, vorrei lasciarvi un suggerimento privato riguardo il mio soggiorno..."); setShowReviewModal(false); }}
-                                            className="text-xs font-bold text-[#064e3b] underline uppercase tracking-widest active:opacity-50 transition-opacity"
-                                        >
-                                            Inviaci un suggerimento privato
-                                        </button>
-                                    </div>
+                                <div className="space-y-4 pt-4">
+                                    <p className="text-xs font-bold text-stone-900 leading-tight">Qualcosa non è stato perfetto?</p>
+                                    <button onClick={() => { triggerWhatsApp("Buongiorno, vorrei lasciarvi un feedback privato..."); setShowReviewModal(false); }} className="text-xs font-bold text-[#064e3b] underline uppercase tracking-widest active:opacity-50 transition-opacity">Inviaci un suggerimento privato</button>
                                 </div>
+                                <button onClick={() => setShowReviewModal(false)} className="text-stone-300 text-xs uppercase tracking-widest font-bold">Chiudi</button>
                             </div>
                         </div>
                     )}
