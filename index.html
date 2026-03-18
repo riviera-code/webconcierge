@@ -3,53 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
     <title>Concierge Digitale - Bordighera Suite Apartments</title>
-    <meta name="title" content="Concierge Digitale - Bordighera Suite Apartments">
-    <meta name="description" content="Il tuo assistente personale per un soggiorno perfetto a Bordighera. Informazioni Wi-Fi, gestione rifiuti, ristoranti consigliati e Concierge AI.">
-
-    <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://riviera-code.github.io/webconcierge/">
-    <meta property="og:title" content="Concierge Digitale - Bordighera Suite Apartments">
-    <meta property="og:description" content="Gestisci il tuo soggiorno in totale autonomia. Ristoranti consigliati, info utili e assistenza immediata.">
-    <meta property="og:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
-
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React & Babel -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React & Dependencies -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
+        :root {
+            --brand-green: #064e3b;
+            --bg-cream: #fdfcf8;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-cream);
+            color: #1c1917;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .font-serif { font-family: 'Playfair Display', serif; }
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #fdfcf8; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        
+
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .text-shadow-strong {
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9);
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .lang-pill {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        i[data-lucide] {
-            display: inline-block;
-            line-height: 0;
-        }
-
-        .chat-container {
-            height: calc(100dvh - 150px);
-        }
-
-        .map-shadow {
-            box-shadow: 0 10px 30px -10px rgba(6, 78, 59, 0.2);
+        .lang-active {
+            background-color: var(--brand-green);
+            color: white;
+            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.2);
         }
     </style>
 </head>
@@ -57,97 +77,396 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        
-        /**
-         * Componente Icon Fixato (createIcons) - Massima stabilità
-         */
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- Translations Data ---
+        const translations = {
+            it: {
+                welcome: "Benvenuti a",
+                stay: "Il tuo Soggiorno",
+                services: "Servizi & Assistenza",
+                access: "Procedura di Accesso",
+                accessSub: "Codici e istruzioni d'ingresso",
+                wifi: "Connessione Wi-Fi",
+                wifiSub: "Reti e password del palazzo",
+                waste: "Raccolta Rifiuti",
+                wasteSub: "Guida alla differenziata",
+                extra: "Accessori Extra",
+                extraSub: "Tostapane, microonde e altro",
+                checkout: "Check-out",
+                checkoutSub: "Istruzioni per la partenza",
+                back: "Indietro",
+                important: "Importante",
+                accessInfo: "I codici di accesso personali ti verranno inviati automaticamente solo dopo aver completato la procedura di Fast Check-in, inserendo i documenti d'identità di tutti gli ospiti.",
+                doorMain: "Portone Principale",
+                doorMainInfo: "Digita il codice numerico sul tastierino all'ingresso del palazzo per sbloccare il portone.",
+                doorApp: "Accesso Appartamento",
+                optA: "Opzione A: Lockbox",
+                optB: "Opzione B: Serratura Smart",
+                lockbox1: "Togli la protezione in plastica.",
+                lockbox2: "Premi 'C' per resettare.",
+                lockbox3: "Digita il codice e ruota la manopola.",
+                smart1: "Digita il codice e premi conferma.",
+                smart2: "La porta si blocca da sola dopo pochi secondi.",
+                videoTutorial: "Video Tutorial",
+                videoError: "Il tuo browser non supporta il video.",
+                lockboxHint: "In caso di errore sulla cassetta, premi 'C' e riprova.",
+                selectNet: "Seleziona la tua rete",
+                unifiedPass: "Password Unificata",
+                wasteTitle: "Gestione & Isola Ecologica",
+                wasteIntro: "Separare i rifiuti domestici",
+                wasteEco: "Inizia la tua pratica eco-sostenibile durante il soggiorno.",
+                wasteLoc: "I contenitori sono sotto il lavello, in un angolo dedicato o sul terrazzo.",
+                wasteItems: ['Plastica e lattine', 'Vetro', 'Carta', 'Organico', 'Indifferenziato'],
+                qrTitle: "Apertura Cassonetti",
+                qrInfo: "Per aprire i cassonetti, utilizza il QR Code sul portachiavi dell'appartamento o il link digitale.",
+                qrBtn: "Apri QR Code Digitale",
+                ecoPos: "Posizione Isola Ecologica",
+                ecoPosSub: "Punto di raccolta esterno con accesso tramite QR Code.",
+                mapsBtn: "Apri in Google Maps",
+                extraItems: ['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere', 'Culla e seggiolone', 'Caffettiera moka'],
+                extraBtn: "Richiedi allo Staff",
+                coTitle: "Partenza",
+                coTime: "Check-out previsto entro le ore 10:00.",
+                coLuggage: "Deposito bagagli disponibile su richiesta.",
+                coKeys: "Lasciare le chiavi sul tavolo e chiudete la porta.",
+                reviewBtn: "Lascia una Recensione",
+                navStay: "Soggiorno",
+                navAi: "AI Concierge",
+                navStaff: "Staff",
+                modalConfirm: "Apri",
+                modalClose: "Chiudi",
+                modalMapsMsg: "Vuoi aprire Google Maps per raggiungere l'isola ecologica?",
+                modalQrMsg: "Vuoi aprire il link per il QR Code digitale?",
+                modalStaffMsg: "Vuoi contattare il nostro staff su WhatsApp?",
+                reviewTitle: "Il vostro feedback",
+                reviewLater: "Più tardi",
+                reviewFive: "Lascia 5 stelle",
+                aiTitle: "Concierge AI",
+                aiSub: "Assistenza istantanea"
+            },
+            en: {
+                welcome: "Welcome to",
+                stay: "Your Stay",
+                services: "Services & Assistance",
+                access: "Access Procedure",
+                accessSub: "Entry codes and instructions",
+                wifi: "Wi-Fi Connection",
+                wifiSub: "Building networks and password",
+                waste: "Waste Collection",
+                wasteSub: "Recycling guide",
+                extra: "Extra Amenities",
+                extraSub: "Toaster, microwave and more",
+                checkout: "Check-out",
+                checkoutSub: "Departure instructions",
+                back: "Back",
+                important: "Important",
+                accessInfo: "Personal access codes will be sent to you automatically only after completing the Fast Check-in procedure by submitting ID documents for all guests.",
+                doorMain: "Main Entrance",
+                doorMainInfo: "Type the numeric code on the keypad at the building entrance to unlock the door.",
+                doorApp: "Apartment Access",
+                optA: "Option A: Lockbox",
+                optB: "Option B: Smart Lock",
+                lockbox1: "Remove the plastic cover.",
+                lockbox2: "Press 'C' to reset.",
+                lockbox3: "Type the code and turn the knob.",
+                smart1: "Type the code and press confirm.",
+                smart2: "The door locks automatically after a few seconds.",
+                videoTutorial: "Video Tutorial",
+                videoError: "Your browser does not support the video tag.",
+                lockboxHint: "In case of typing error on the box, press 'C' and try again.",
+                selectNet: "Select your network",
+                unifiedPass: "Unified Password",
+                wasteTitle: "Management & Eco-Station",
+                wasteIntro: "Separate household waste",
+                wasteEco: "Start your eco-sustainable practice during your stay.",
+                wasteLoc: "Labeled bins are under the sink, in a dedicated corner, or on the terrace.",
+                wasteItems: ['Plastic and cans', 'Glass', 'Paper', 'Organic', 'General waste'],
+                qrTitle: "Opening Bins",
+                qrInfo: "To open the eco-station bins, use the QR Code on the apartment keychain or the digital link.",
+                qrBtn: "Open Digital QR Code",
+                ecoPos: "Eco-Station Location",
+                ecoPosSub: "External collection point accessible via QR Code.",
+                mapsBtn: "Open in Google Maps",
+                extraItems: ['Toaster', 'Microwave', 'Iron and board', 'Vacuum cleaner', 'Crib and high chair', 'Moka coffee maker'],
+                extraBtn: "Request from Staff",
+                coTitle: "Departure",
+                coTime: "Check-out is scheduled by 10:00 AM.",
+                coLuggage: "Luggage storage available upon request.",
+                coKeys: "Leave the keys on the table and close the door.",
+                reviewBtn: "Leave a Review",
+                navStay: "Stay",
+                navAi: "AI Concierge",
+                navStaff: "Staff",
+                modalConfirm: "Open",
+                modalClose: "Close",
+                modalMapsMsg: "Do you want to open Google Maps to reach the eco-station?",
+                modalQrMsg: "Do you want to open the link for the digital QR code?",
+                modalStaffMsg: "Do you want to contact our staff on WhatsApp?",
+                reviewTitle: "Your feedback",
+                reviewLater: "Later",
+                reviewFive: "Leave 5 stars",
+                aiTitle: "AI Concierge",
+                aiSub: "Instant assistance"
+            },
+            fr: {
+                welcome: "Bienvenue à",
+                stay: "Votre Séjour",
+                services: "Services & Assistance",
+                access: "Procédure d'Accès",
+                accessSub: "Codes et instructions d'entrée",
+                wifi: "Connexion Wi-Fi",
+                wifiSub: "Réseaux et mot de passe",
+                waste: "Collecte des Déchets",
+                wasteSub: "Guide du tri sélectif",
+                extra: "Accessoires Extra",
+                extraSub: "Grille-pain, micro-ondes, etc.",
+                checkout: "Départ",
+                checkoutSub: "Instructions pour le départ",
+                back: "Retour",
+                important: "Important",
+                accessInfo: "Les codes d'accès personnels vous seront envoyés automatiquement après avoir complété le Fast Check-in (documents d'identité requis).",
+                doorMain: "Porte Principale",
+                doorMainInfo: "Tapez le code numérique sur le clavier à l'entrée de l'immeuble.",
+                doorApp: "Accès Appartement",
+                optA: "Option A : Boîtier à clés",
+                optB: "Option B : Serrure Smart",
+                lockbox1: "Retirez la protection en plastique.",
+                lockbox2: "Appuyez sur 'C' pour réinitialiser.",
+                lockbox3: "Tapez le code et tournez le bouton.",
+                smart1: "Tapez le code et confirmez.",
+                smart2: "La porte se verrouille seule après quelques secondes.",
+                videoTutorial: "Tutoriel Vidéo",
+                videoError: "Vidéo non supportée.",
+                lockboxHint: "En cas d'erreur, appuyez sur 'C' et réessayez.",
+                selectNet: "Sélectionnez votre réseau",
+                unifiedPass: "Mot de passe unifié",
+                wasteTitle: "Gestion & Déchetterie",
+                wasteIntro: "Trier les déchets",
+                wasteEco: "Adoptez des pratiques éco-responsables pendant votre séjour.",
+                wasteLoc: "Les bacs sont sous l'évier ou sur la terrasse.",
+                wasteItems: ['Plastique et canettes', 'Verre', 'Papier', 'Organique', 'Tout-venant'],
+                qrTitle: "Ouverture des Bacs",
+                qrInfo: "Utilisez le QR Code sur le porte-clés ou le lien numérique.",
+                qrBtn: "Ouvrir QR Code Numérique",
+                ecoPos: "Position Déchetterie",
+                ecoPosSub: "Point de collecte externe avec accès par QR Code.",
+                mapsBtn: "Ouvrir Google Maps",
+                extraItems: ['Grille-pain', 'Micro-ondes', 'Fer à repasser', 'Aspirateur', 'Lit bébé', 'Moka'],
+                extraBtn: "Demander au Staff",
+                coTitle: "Départ",
+                coTime: "Check-out avant 10h00.",
+                coLuggage: "Consigne à bagages sur demande.",
+                coKeys: "Laissez les clés sulla table et fermez la porte.",
+                reviewBtn: "Laisser un Avis",
+                navStay: "Séjour",
+                navAi: "Concierge IA",
+                navStaff: "Équipe",
+                modalConfirm: "Ouvrir",
+                modalClose: "Fermer",
+                modalMapsMsg: "Voulez-vous ouvrir Google Maps ?",
+                modalQrMsg: "Ouvrir le QR Code numérique ?",
+                modalStaffMsg: "Contacter l'équipe sur WhatsApp ?",
+                reviewTitle: "Votre avis",
+                reviewLater: "Plus tard",
+                reviewFive: "Laisser 5 étoiles",
+                aiTitle: "Concierge IA",
+                aiSub: "Assistance instantanée"
+            },
+            de: {
+                welcome: "Willkommen in",
+                stay: "Ihr Aufenthalt",
+                services: "Service & Hilfe",
+                access: "Zugangsverfahren",
+                accessSub: "Eingangscodes und Anweisungen",
+                wifi: "WLAN-Verbindung",
+                wifiSub: "Netzwerke und Passwort",
+                waste: "Müllentsorgung",
+                wasteSub: "Leitfaden zur Mülltrennung",
+                extra: "Zusatzoptionen",
+                extraSub: "Toaster, Mikrowelle usw.",
+                checkout: "Check-out",
+                checkoutSub: "Anweisungen zur Abreise",
+                back: "Zurück",
+                important: "Wichtig",
+                accessInfo: "Persönliche Zugangscodes werden nach Abschluss des Fast Check-ins (Ausweisdokumente erforderlich) automatisch versendet.",
+                doorMain: "Haupteingang",
+                doorMainInfo: "Geben Sie den Code am Tastenfeld des Gebäudeeingangs ein.",
+                doorApp: "Wohnungszugang",
+                optA: "Option A: Lockbox",
+                optB: "Option B: Smart Lock",
+                lockbox1: "Kunststoffschutz entfernen.",
+                lockbox2: "Drücken Sie 'C' zum Zurücksetzen.",
+                lockbox3: "Code eingeben und Knopf drehen.",
+                smart1: "Code eingeben und bestätigen.",
+                smart2: "Die Tür verriegelt nach wenigen Sekunden automatisch.",
+                videoTutorial: "Video-Anleitung",
+                videoError: "Video wird nicht unterstützt.",
+                lockboxHint: "Bei Fehlern 'C' drücken und erneut versuchen.",
+                selectNet: "Netzwerk auswählen",
+                unifiedPass: "Einheitliches Passwort",
+                wasteTitle: "Müll & Wertstoffhof",
+                wasteIntro: "Hausmüll trennen",
+                wasteEco: "Handeln Sie während Ihres Aufenthalts umweltbewusst.",
+                wasteLoc: "Behälter befinden sich unter der Spüle oder auf der Terrasse.",
+                wasteItems: ['Plastik & Dosen', 'Glas', 'Papier', 'Bio', 'Restmüll'],
+                qrTitle: "Container öffnen",
+                qrInfo: "Nutzen Sie den QR-Code am Schlüsselbund oder den digitalen Link.",
+                qrBtn: "Digitalen QR-Code öffnen",
+                ecoPos: "Standort Wertstoffhof",
+                ecoPosSub: "Externer Sammelpunkt mit QR-Code-Zugang.",
+                mapsBtn: "In Google Maps öffnen",
+                extraItems: ['Toaster', 'Mikrowelle', 'Bügeleisen', 'Staubsauger', 'Babybett', 'Moka'],
+                extraBtn: "Beim Personal anfragen",
+                coTitle: "Abreise",
+                coTime: "Check-out bis 10:00 Uhr.",
+                coLuggage: "Gepäckaufbewahrung auf Anfrage.",
+                coKeys: "Schlüssel auf dem Tisch lassen und Tür schließen.",
+                reviewBtn: "Bewertung abgeben",
+                navStay: "Aufenthalt",
+                navAi: "KI-Concierge",
+                navStaff: "Personal",
+                modalConfirm: "Öffnen",
+                modalClose: "Schließen",
+                modalMapsMsg: "Google Maps öffnen?",
+                modalQrMsg: "Digitalen QR-Code öffnen?",
+                modalStaffMsg: "Personal via WhatsApp kontaktieren?",
+                reviewTitle: "Ihr Feedback",
+                reviewLater: "Später",
+                reviewFive: "5 Sterne geben",
+                aiTitle: "KI-Concierge",
+                aiSub: "Sofortige Hilfe"
+            },
+            ru: {
+                welcome: "Добро пожаловать в",
+                stay: "Ваше пребывание",
+                services: "Услуги и помощь",
+                access: "Процедура доступа",
+                accessSub: "Коды и инструкции",
+                wifi: "Подключение Wi-Fi",
+                wifiSub: "Сети и пароль",
+                waste: "Вывоз мусора",
+                wasteSub: "Гид по сортировке",
+                extra: "Доп. аксессуары",
+                extraSub: "Тостер, микроволновка и др.",
+                checkout: "Выезд",
+                checkoutSub: "Инструкции при выезде",
+                back: "Назад",
+                important: "Важно",
+                accessInfo: "Персональные коды доступа будут отправлены вам автоматически только после завершения процедуры Fast Check-in (необходимы документы всех гостей).",
+                doorMain: "Главная дверь",
+                doorMainInfo: "Введите цифровой код на панели у входа в здание.",
+                doorApp: "Вход в апартаменты",
+                optA: "Вариант А: Локсбокс",
+                optB: "Вариант Б: Смарт-замок",
+                lockbox1: "Снимите пластиковую защиту.",
+                lockbox2: "Нажмите 'C' для сброса.",
+                lockbox3: "Введите код и поверните ручку.",
+                smart1: "Введите код и подтвердите.",
+                smart2: "Дверь заблокируется через несколько секунд.",
+                videoTutorial: "Видео-инструкция",
+                videoError: "Видео не поддерживается.",
+                lockboxHint: "В случае ошибки нажмите 'C' и попробуйте снова.",
+                selectNet: "Выберите сеть",
+                unifiedPass: "Единый пароль",
+                wasteTitle: "Мусор и эко-зона",
+                wasteIntro: "Сортировка мусора",
+                wasteEco: "Позаботьтесь об экологии во время вашего отдыха.",
+                wasteLoc: "Контейнеры находятся под раковиной или на террасе.",
+                wasteItems: ['Пластик и жесть', 'Стекло', 'Бумага', 'Органика', 'Прочее'],
+                qrTitle: "Открытие баков",
+                qrInfo: "Для открытия баков используйте QR-код на брелоке или цифровую ссылку.",
+                qrBtn: "Открыть цифровой QR-код",
+                ecoPos: "Местоположение эко-зоны",
+                ecoPosSub: "Внешний пункт сбора, доступ по QR-коду.",
+                mapsBtn: "Открыть в Google Maps",
+                extraItems: ['Тостер', 'Микроволновка', 'Утюг', 'Пылесос', 'Кроватка', 'Кофеварка'],
+                extraBtn: "Запрос персоналу",
+                coTitle: "Отъезд",
+                coTime: "Выезд до 10:00 утра.",
+                coLuggage: "Хранение багажа по запросу.",
+                coKeys: "Оставьте ключи на столе и закройте дверь.",
+                reviewBtn: "Оставить отзыв",
+                navStay: "Проживание",
+                navAi: "ИИ-Консьерж",
+                navStaff: "Персонал",
+                modalConfirm: "Открыть",
+                modalClose: "Закрыть",
+                modalMapsMsg: "Открыть Google Maps?",
+                modalQrMsg: "Открыть цифровой QR-код?",
+                modalStaffMsg: "Связаться с персоналом в WhatsApp?",
+                reviewTitle: "Ваш отзыв",
+                reviewLater: "Позже",
+                reviewFive: "Поставить 5 звезд",
+                aiTitle: "ИИ-Консьерж",
+                aiSub: "Мгновенная помощь"
+            }
+        };
+
+        const languages = [
+            { id: 'it', flag: '🇮🇹', label: 'IT' },
+            { id: 'en', flag: '🇬🇧', label: 'EN' },
+            { id: 'fr', flag: '🇫🇷', label: 'FR' },
+            { id: 'de', flag: '🇩🇪', label: 'DE' },
+            { id: 'ru', flag: '🇷🇺', label: 'RU' }
+        ];
+
+        // --- Custom Icon Component ---
         const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
             const ref = useRef(null);
 
             useEffect(() => {
-                const render = () => {
-                    if (!window.lucide || !ref.current) return false;
-                    const lucideName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-                    ref.current.innerHTML = `<i data-lucide="${lucideName}"></i>`;
-                    window.lucide.createIcons({
-                        attrs: { 
-                            width: size, 
-                            height: size, 
-                            "stroke-width": strokeWidth,
-                            class: className 
-                        }
-                    });
-                    return true;
+                const renderIcon = () => {
+                    if (window.lucide && ref.current) {
+                        ref.current.innerHTML = '';
+                        const iconEl = document.createElement('i');
+                        const lucideName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+                        iconEl.setAttribute('data-lucide', lucideName);
+                        ref.current.appendChild(iconEl);
+                        
+                        window.lucide.createIcons({
+                            attrs: { 
+                                width: size, 
+                                height: size, 
+                                "stroke-width": strokeWidth,
+                                class: className 
+                            }
+                        });
+                        return true;
+                    }
+                    return false;
                 };
 
-                if (!render()) {
-                    const t = setInterval(() => { if (render()) clearInterval(t); }, 50);
-                    return () => clearInterval(t);
+                if (!renderIcon()) {
+                    const interval = setInterval(() => {
+                        if (renderIcon()) clearInterval(interval);
+                    }, 50);
+                    return () => clearInterval(interval);
                 }
-            }, [name, size, strokeWidth, className]);
+            }, [name, size, className, strokeWidth]);
 
-            return (
-                <span
-                    ref={ref}
-                    className={`inline-flex items-center justify-center ${className}`}
-                    style={{ width: size, height: size }}
-                />
-            );
+            return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
         };
 
         const App = () => {
+            const [lang, setLang] = useState('it');
             const [activeTab, setActiveTab] = useState('stays');
             const [copySuccess, setCopySuccess] = useState(false);
             const [externalModal, setExternalModal] = useState({ show: false, type: '', url: '', title: '', message: '' });
             const [showReviewModal, setShowReviewModal] = useState(false);
 
+            const t = translations[lang];
+
             const staffPhoneNumber = "393891131311";
             const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
             const googleReviewUrl = "https://g.page/r/CSI2adO9stnNEAE/review";
-
+            const qrCodeLink = "https://riviera-code.github.io/codicefiscale/";
+            
             const wifiNetworks = [
                 "La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", 
                 "Federico's", "Rosalba's", "Attico con Vista", "The Green Corner"
             ];
             const wifiPassword = "Carducci37c";
-
-            const restaurants = [
-                {
-                    category: "Sul mare / Lungomare",
-                    icon: "Waves",
-                    items: [
-                        { name: "Maoma Beach", comment: "Personale gentile e simpatico, locale informale sul mare con ottimo rapporto qualità/prezzo.", address: "Lungomare Argentina, 11, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/uXpX8WqR9n9L1zXj6" },
-                        { name: "Paolo e Guido al Marina Beach", comment: "Rilassato, ottima cucina, perfetto a pranzo in una giornata di sole.", address: "Lungomare Argentina, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
-                        { name: "Playa Argentina", comment: "Aperto di giorno, locale informale con ottima pizza e piatti leggeri.", address: "Lungomare Argentina, 23, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
-                        { name: "Amarea Ristorante Romolo Mare", comment: "Un classico a Bordighera: ottima cucina e grande dehor da godersi nelle belle giornate.", address: "Lungomare Argentina, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" },
-                        { name: "Bagni Caranca", comment: "Locale informale sul mare, perfetto per pranzo o per un aperitivo al sole.", address: "Lungomare Argentina, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/q6E5R9Fz6X8W8X8W" }
-                    ]
-                },
-                {
-                    category: "Bordighera Alta (Centro Storico)",
-                    icon: "Castle",
-                    items: [
-                        { name: "Magiargè", comment: "Osteria con cucina ligure genuina e cantina curata. Uno dei posti più autentici del centro storico. Prenotazione consigliata.", address: "Via Dritta, 2, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/K6V8X8W8X8W8X8W" },
-                        { name: "U Cavetu | Osteria della Pineta", comment: "Cucina di ottima qualità firmata dal giovane chef Oscar Martinelli, immerso nella pineta di Bordighera Alta. Ottima cantina.", address: "Via Avv. F. Rossi, 1, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Ristorante Del Capo", comment: "Cucina di livello in una location suggestiva di Bordighera Alta.", address: "Via Al Capo, 4, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "La Gritta Bordigotta", comment: "Ristorantino incastonato nel centro storico, piatti locali con ottimo rapporto qualità/prezzo.", address: "Piazza del Popolo, 24, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Ristorante Pizzeria La Piazzetta", comment: "Nel cuore del centro storico, ottima pizza napoletana.", address: "Piazza del Popolo, 15, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Piccolo Bistrot Gourmet", comment: "Pittoresco locale in stile napoletano, ideale per aperitivo o qualcosa di leggero. Staff accogliente.", address: "Via Dritta, 10, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Novantiqua", comment: "Nel cuore di Bordighera Alta, cocktail ricercati, ampia cantina e cucina fusion raffinata.", address: "Via Lunga, 2, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Ristorante A Scibretta", comment: "Localino dove gustare i migliori raviolini liguri della tradizione.", address: "Via Bastioni, 93, 18012 Bordighera IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" }
-                    ]
-                },
-                {
-                    category: "Nei dintorni",
-                    icon: "Car",
-                    items: [
-                        { name: "Iride³ Gastrobar (Vallecrosia)", comment: "Cucina creativa mai banale. Bellissimo locale nel centro del paese.", address: "Via Colonnello Aprosio, 258, 18019 Vallecrosia IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "Ristorante Il Giardino (Vallebona)", comment: "Cucina ligure tradizionale, locale vecchio stile amatissimo dai residenti.", address: "Piazza della Libertà, 3, 18012 Vallebona IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" },
-                        { name: "ITER Vallebona", comment: "Un unico tavolo per 8 posti. Un rituale gastronomico con cura maniacale del dettaglio.", address: "Piazza XX Settembre, 17, 18012 Vallebona IM", maps: "https://maps.app.goo.gl/6W9U2A6X8W8X8W8X" }
-                    ]
-                }
-            ];
 
             const copyToClipboard = (text) => {
                 const textArea = document.createElement("textarea");
@@ -158,30 +477,12 @@
                     document.execCommand('copy');
                     setCopySuccess(true);
                     setTimeout(() => setCopySuccess(false), 2000);
-                } catch (err) {
-                    console.error('Copy error', err);
-                }
+                } catch (err) { console.error('Copy error', err); }
                 document.body.removeChild(textArea);
             };
 
-            const triggerWhatsApp = (msg) => {
-                setExternalModal({
-                    show: true,
-                    type: 'whatsapp',
-                    url: `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(msg)}`,
-                    title: 'Contatta lo Staff',
-                    message: 'Sei sicuro di voler aprire WhatsApp per inviare questa richiesta al nostro team?'
-                });
-            };
-
-            const triggerMaps = (url, name) => {
-                setExternalModal({
-                    show: true,
-                    type: 'maps',
-                    url: url,
-                    title: 'Apri Navigatore',
-                    message: `Vuoi uscire dall'app per vedere la posizione di "${name}" su Google Maps?`
-                });
+            const triggerAction = (type, url, title, message) => {
+                setExternalModal({ show: true, type, url, title, message });
             };
 
             const confirmExternal = () => {
@@ -189,94 +490,74 @@
                 setExternalModal({ ...externalModal, show: false });
             };
 
+            const LanguageSwitcher = () => (
+                <div className="flex justify-center items-center gap-1 p-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                    {languages.map(l => (
+                        <button
+                            key={l.id}
+                            onClick={() => setLang(l.id)}
+                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold tracking-tight transition-all flex items-center gap-1.5 ${lang === l.id ? 'bg-white text-[#064e3b]' : 'text-white hover:bg-white/10'}`}
+                        >
+                            <span>{l.flag}</span>
+                            <span>{l.label}</span>
+                        </button>
+                    ))}
+                </div>
+            );
+
             const ActionCard = ({ iconName, title, subtitle, onClick }) => (
                 <button 
                     onClick={onClick}
-                    className="w-full flex items-center p-5 bg-white rounded-[24px] border border-stone-100 shadow-sm hover:shadow-md transition-all group active:scale-[0.98] mb-4"
+                    className="w-full flex items-center p-5 bg-white rounded-3xl border border-stone-100 shadow-sm hover:shadow-md active:scale-[0.98] transition-all group mb-4"
                 >
                     <div className="p-3 bg-stone-50 rounded-2xl text-[#064e3b] group-hover:bg-[#064e3b] group-hover:text-white transition-colors">
-                        <Icon name={iconName} size={24} />
+                        <Icon name={iconName} size={22} />
                     </div>
                     <div className="ml-5 text-left flex-1">
-                        <h4 className="font-bold text-[15px] text-stone-900">{title}</h4>
-                        <p className="text-xs text-stone-500 mt-0.5">{subtitle}</p>
+                        <h4 className="font-bold text-[15px] text-stone-900 leading-tight">{title}</h4>
+                        <p className="text-xs text-stone-500 mt-1">{subtitle}</p>
                     </div>
                     <Icon name="ChevronRight" size={18} className="text-stone-300" />
                 </button>
             );
 
-            const renderStays = () => (
-                <div className="pb-32 fade-in overflow-x-hidden">
-                    <div className="relative h-80 bg-stone-200 overflow-hidden">
-                        <img 
-                            src="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg" 
-                            alt="Interno Bordighera Suite" 
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 flex flex-col justify-end p-8 text-center sm:text-left">
-                            <h1 className="text-white font-serif text-3xl font-light text-shadow-strong leading-tight">Bordighera Suite Apartments</h1>
-                            <p className="text-stone-100 text-sm mt-1 text-shadow-strong font-medium uppercase tracking-wider text-center">Quality Apartments in Bordighera</p>
-                        </div>
-                    </div>
-
-                    <div className="p-6">
-                        <div className="mb-10 px-2 text-center">
-                           <h3 className="font-serif text-2xl text-[#064e3b] mb-3">Benvenuti a Casa</h3>
-                           <p className="text-sm text-stone-600 leading-relaxed italic">
-                              Siamo lieti di avervi come nostri ospiti. Inizia il soggiorno con eleganza e scopri i servizi a tua disposizione.
-                           </p>
-                        </div>
-                        
-                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-6 px-2">SERVIZI IN APPARTAMENTO</h3>
-                        
-                        <div className="space-y-1">
-                            <ActionCard iconName="Wifi" title="Connessione Wi-Fi" subtitle="Reti e password unificata" onClick={() => setActiveTab('wifi-detail')} />
-                            <ActionCard iconName="Trash2" title="Raccolta Rifiuti" subtitle="Guida alla differenziata domestica" onClick={() => setActiveTab('waste-detail')} />
-                            <ActionCard iconName="PlusCircle" title="Accessori Extra" subtitle="Tostapane, microonde e altro su richiesta" onClick={() => setActiveTab('extra-detail')} />
-                            <ActionCard iconName="Clock" title="Procedura Check-out" subtitle="Istruzioni per la partenza entro le 10:00" onClick={() => setActiveTab('checkout-detail')} />
-                        </div>
-                    </div>
+            const SectionTitle = ({ title, subtitle }) => (
+                <div className="mb-8 px-2">
+                    <h2 className="font-serif text-3xl text-[#064e3b] leading-tight italic">{title}</h2>
+                    {subtitle && <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mt-2">{subtitle}</p>}
                 </div>
             );
 
-            const renderExplore = () => (
-                <div className="p-6 pb-32 fade-in">
-                    <h1 className="font-serif text-4xl text-[#064e3b] mt-12 mb-2 font-light tracking-tight">Explore</h1>
-                    <p className="text-stone-400 text-sm mb-10 uppercase tracking-widest font-bold text-[10px]">Scopri Bordighera</p>
-                    
-                    <div className="space-y-6">
-                        {/* Bordighera Alta Card */}
-                        <button 
-                            onClick={() => setActiveTab('alta-detail')}
-                            className="w-full relative h-64 rounded-[40px] overflow-hidden shadow-lg group"
-                        >
-                            <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Bordighera Alta" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-left">
-                                <span className="text-xs font-bold text-white/90 tracking-widest uppercase mb-1">IL BORGO MEDIEVALE</span>
-                                <h4 className="text-white font-serif text-2xl text-shadow-strong">Bordighera Alta</h4>
-                            </div>
-                        </button>
+            const renderHome = () => (
+                <div className="fade-in pb-32">
+                    <div className="relative h-[45vh] bg-stone-200 overflow-hidden">
+                        <img 
+                            src="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg" 
+                            alt="Bordighera Suite Apartments" 
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                        
+                        {/* Persistent Language Switcher on Home */}
+                        <div className="absolute top-6 left-0 right-0 flex justify-center z-20">
+                            <LanguageSwitcher />
+                        </div>
 
-                        {/* Ristoranti Card */}
-                        <button 
-                            onClick={() => setActiveTab('restaurants-detail')}
-                            className="w-full relative h-48 rounded-[40px] overflow-hidden shadow-lg group"
-                        >
-                            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Ristoranti" />
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-left">
-                                <span className="text-xs font-bold text-white/90 tracking-widest uppercase mb-1">ENOGASTRONOMIA</span>
-                                <h4 className="text-white font-serif text-2xl text-shadow-strong">Ristoranti Consigliati</h4>
-                            </div>
-                        </button>
+                        <div className="absolute inset-0 flex flex-col justify-end p-8 pb-12">
+                            <p className="text-white/70 text-[10px] font-bold uppercase tracking-[0.3em] mb-2">{t.welcome}</p>
+                            <h1 className="text-white font-serif text-4xl font-light text-shadow-strong leading-[1.15]">Bordighera Suite<br/>Apartments</h1>
+                        </div>
+                    </div>
 
-                        <div className="relative h-48 rounded-[40px] overflow-hidden shadow-lg group">
-                            <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-black/40 p-8 flex flex-col justify-end">
-                                <span className="text-xs font-bold text-white/70 tracking-widest uppercase mb-1">NATURA</span>
-                                <h4 className="text-white font-serif text-2xl">Giardino Pallanca</h4>
-                            </div>
+                    <div className="p-6 -mt-8 relative z-10 bg-[#fdfcf8] rounded-t-[40px]">
+                        <SectionTitle title={t.stay} subtitle={t.services} />
+                        
+                        <div className="space-y-1">
+                            <ActionCard iconName="Key" title={t.access} subtitle={t.accessSub} onClick={() => setActiveTab('access-detail')} />
+                            <ActionCard iconName="Wifi" title={t.wifi} subtitle={t.wifiSub} onClick={() => setActiveTab('wifi-detail')} />
+                            <ActionCard iconName="Trash2" title={t.waste} subtitle={t.wasteSub} onClick={() => setActiveTab('waste-detail')} />
+                            <ActionCard iconName="PlusCircle" title={t.extra} subtitle={t.extraSub} onClick={() => setActiveTab('extra-detail')} />
+                            <ActionCard iconName="Clock" title={t.checkout} subtitle={t.checkoutSub} onClick={() => setActiveTab('checkout-detail')} />
                         </div>
                     </div>
                 </div>
@@ -285,320 +566,292 @@
             const renderChat = () => (
                 <div className="flex flex-col h-screen bg-white">
                     <div className="p-6 bg-white border-b border-stone-100 pt-16 shadow-sm text-center">
-                        <h2 className="font-serif text-2xl text-[#064e3b]">Concierge AI</h2>
-                        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Powered by Bordighera Suite Apartments</p>
+                        <h2 className="font-serif text-2xl text-[#064e3b]">{t.aiTitle}</h2>
+                        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{t.aiSub}</p>
                     </div>
-                    <div className="flex-1 bg-stone-50 chat-container overflow-hidden">
+                    <div className="flex-1 bg-stone-50 overflow-hidden" style={{ height: 'calc(100vh - 160px)' }}>
                         <iframe 
                             src={tawkChatUrl} 
                             className="w-full h-full border-none"
-                            title="Tawk.to Chat"
+                            title="Concierge Chat"
                         ></iframe>
                     </div>
-                    <div className="h-24 bg-white"></div>
+                </div>
+            );
+
+            const renderSubPage = (content) => (
+                <div className="p-6 pt-16 pb-32 fade-in min-h-screen">
+                    <div className="flex justify-between items-center mb-8">
+                        <button 
+                            onClick={() => setActiveTab('stays')}
+                            className="flex items-center gap-2 px-5 py-3 bg-white rounded-2xl border border-stone-100 shadow-sm text-[#064e3b] active:scale-95 transition-all"
+                        >
+                            <Icon name="ArrowLeft" size={18} /> 
+                            <span className="font-bold text-xs uppercase tracking-wider">{t.back}</span>
+                        </button>
+                        
+                        {/* Minified Lang Switcher for Subpages */}
+                        <div className="flex gap-1">
+                            {languages.map(l => (
+                                <button 
+                                    key={l.id} 
+                                    onClick={() => setLang(l.id)}
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all ${lang === l.id ? 'bg-[#064e3b] text-white shadow-md' : 'bg-white border border-stone-100 text-stone-400'}`}
+                                >
+                                    {l.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    {content}
                 </div>
             );
 
             return (
-                <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden bg-[#fdfcf8]">
+                <div className="max-w-md mx-auto min-h-screen relative bg-[#fdfcf8] overflow-x-hidden">
                     <main>
-                        {activeTab === 'stays' && renderStays()}
-                        {activeTab === 'explore' && renderExplore()}
+                        {activeTab === 'stays' && renderHome()}
                         {activeTab === 'chat' && renderChat()}
                         
-                        {['wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail', 'restaurants-detail', 'alta-detail'].includes(activeTab) && (
-                            <div className="p-6 pt-12 pb-32 fade-in min-h-screen">
-                                <button 
-                                    onClick={() => setActiveTab(['restaurants-detail', 'alta-detail'].includes(activeTab) ? 'explore' : 'stays')} 
-                                    className="flex items-center gap-2 px-5 py-3 bg-white rounded-[24px] border border-stone-100 shadow-sm hover:shadow-md transition-all group active:scale-[0.95] mb-10 text-[#064e3b]"
-                                >
-                                    <Icon name="ChevronLeft" size={20} strokeWidth={2.5} /> 
-                                    <span className="font-bold text-sm tracking-tight uppercase">Indietro</span>
-                                </button>
+                        {activeTab === 'access-detail' && renderSubPage(
+                            <div className="space-y-8 text-stone-800">
+                                <SectionTitle title={t.access} subtitle="Check-in" />
                                 
-                                {activeTab === 'alta-detail' && (
-                                    <div className="space-y-8 pb-10 text-stone-700">
-                                        <div className="px-2">
-                                            <h2 className="font-serif text-3xl text-[#064e3b] leading-tight italic">Bordighera Alta<br/><span className="text-xl text-stone-400 not-italic font-sans font-bold uppercase tracking-widest">Il Borgo Medievale</span></h2>
+                                <div className="bg-[#064e3b]/5 p-6 rounded-[32px] border border-[#064e3b]/10 space-y-4">
+                                    <div className="flex items-center gap-3 text-[#064e3b]">
+                                        <Icon name="Info" size={20} />
+                                        <h3 className="font-bold text-sm uppercase tracking-wider">{t.important}</h3>
+                                    </div>
+                                    <p className="text-sm leading-relaxed text-stone-600 italic">
+                                        {t.accessInfo}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="p-6 bg-white rounded-[32px] border border-stone-100 shadow-sm space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center font-bold text-[#064e3b]">1</div>
+                                            <h3 className="font-bold">{t.doorMain}</h3>
                                         </div>
+                                        <p className="text-sm text-stone-500 ml-12">{t.doorMainInfo}</p>
+                                    </div>
 
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1548123282-086381664724?w=600" className="w-full h-64 object-cover" />
-                                            <div className="p-8 space-y-6">
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="p-4 bg-stone-50 rounded-3xl">
-                                                        <Icon name="Clock" size={18} className="text-[#064e3b] mb-2" />
-                                                        <p className="text-[10px] font-bold uppercase text-stone-400">Tempo</p>
-                                                        <p className="text-xs font-bold">1–2 ore</p>
-                                                    </div>
-                                                    <div className="p-4 bg-stone-50 rounded-3xl">
-                                                        <Icon name="Map" size={18} className="text-[#064e3b] mb-2" />
-                                                        <p className="text-[10px] font-bold uppercase text-stone-400">Distanza</p>
-                                                        <p className="text-xs font-bold">10 min a piedi</p>
-                                                    </div>
-                                                </div>
+                                    <div className="p-6 bg-white rounded-[32px] border border-stone-100 shadow-sm space-y-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center font-bold text-[#064e3b]">2</div>
+                                            <h3 className="font-bold">{t.doorApp}</h3>
+                                        </div>
+                                        
+                                        <div className="space-y-4 ml-12">
+                                            <div className="space-y-2">
+                                                <h4 className="text-xs font-bold uppercase text-stone-400 tracking-widest">{t.optA}</h4>
+                                                <ul className="text-sm space-y-2 text-stone-600">
+                                                    <li className="flex gap-2"><Icon name="CheckCircle" size={14} className="text-green-600 mt-0.5 shrink-0" /> {t.lockbox1}</li>
+                                                    <li className="flex gap-2"><Icon name="CheckCircle" size={14} className="text-green-600 mt-0.5 shrink-0" /> {t.lockbox2}</li>
+                                                    <li className="flex gap-2"><Icon name="CheckCircle" size={14} className="text-green-600 mt-0.5 shrink-0" /> {t.lockbox3}</li>
+                                                </ul>
+                                            </div>
 
-                                                <section className="space-y-3">
-                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Perché visitarlo</h3>
-                                                    <p className="text-sm leading-relaxed">
-                                                        Bordighera Alta è il cuore antico della città. Mentre il lungomare racconta l'Ottocento cosmopolita, il borgo medievale parla di una storia più profonda: una comunità sopravvissuta ai Saraceni che ha saputo conquistare la propria indipendenza.
-                                                        Le mura pentagonali reggono ancora e i carruggi sono gli stessi che stregarono <b>Claude Monet</b> nel 1884.
-                                                    </p>
-                                                </section>
-
-                                                <section className="space-y-3">
-                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Le tre porte di accesso</h3>
-                                                    <ul className="text-sm space-y-3">
-                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta Sottana (Ovest):</b> la più antica, risalente al 1470.</p></li>
-                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta Soprana (Est):</b> della Maddalena, aperta nel 1780.</p></li>
-                                                        <li className="flex gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#064e3b] mt-2 shrink-0" /> <p><b>Porta del Capo (Sud):</b> seicentesca.</p></li>
-                                                    </ul>
-                                                    <div className="p-4 bg-[#fdfcf8] border border-stone-100 rounded-2xl italic text-xs">
-                                                        Consiglio: Entra da una porta ed esci da un'altra. Rallenta e guarda in alto: ogni angolo nasconde un segreto.
-                                                    </div>
-                                                </section>
-
-                                                <img src="https://images.unsplash.com/photo-1596434431526-25807187c331?w=600" className="w-full h-48 object-cover rounded-3xl" />
-
-                                                <section className="space-y-3">
-                                                    <h3 className="font-bold text-stone-900 uppercase text-xs tracking-widest">Cosa vedere</h3>
-                                                    <div className="space-y-4">
-                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
-                                                            <p className="font-bold text-sm">Piazza del Popolo</p>
-                                                            <p className="text-xs">Custodisce la Chiesa di Santa Maria Maddalena. Il suo campanile in origine era una torre di avvistamento difensiva.</p>
-                                                        </div>
-                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
-                                                            <p className="font-bold text-sm">Oratorio di San Bartolomeo</p>
-                                                            <p className="text-xs">Qui nel 1686 si proclamò la "Magnifica Comunità degli Otto Luoghi", sancendo l'indipendenza da Ventimiglia.</p>
-                                                        </div>
-                                                        <div className="p-4 border-l-2 border-[#064e3b] space-y-1">
-                                                            <p className="font-bold text-sm">Sentiero del Beodo</p>
-                                                            <p className="text-xs">Ricalca l'antico acquedotto. Charles Garnier lo definì "una delle passeggiate più entusiasmanti". Monet vi dipinse palme e ulivi.</p>
-                                                        </div>
-                                                    </div>
-                                                </section>
-
-                                                <div className="pt-6 border-t border-stone-50 space-y-6">
-                                                    <h3 className="font-serif text-xl text-[#064e3b]">Dove mangiare nel borgo</h3>
-                                                    <div className="space-y-4">
-                                                        {restaurants[1].items.map((res, i) => (
-                                                            <div key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-3xl">
-                                                                <div className="flex-1">
-                                                                    <p className="font-bold text-sm text-stone-900">{res.name}</p>
-                                                                    <p className="text-[10px] text-stone-400 font-medium">Cucina tipica & Gourmet</p>
-                                                                </div>
-                                                                <button 
-                                                                    onClick={() => triggerMaps(res.maps, res.name)}
-                                                                    className="p-2 text-[#064e3b] hover:bg-white rounded-full transition-all"
-                                                                >
-                                                                    <Icon name="Map" size={20} />
-                                                                </button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                <div className="p-6 bg-[#064e3b] text-white rounded-[32px] space-y-2">
-                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 text-center">Curiosità</p>
-                                                    <p className="text-xs text-center leading-relaxed">
-                                                        Bordighera è l'unico comune italiano autorizzato a fornire le palme al Vaticano per la Domenica delle Palme dal XVI secolo. Partono proprio da qui!
-                                                    </p>
-                                                </div>
+                                            <div className="space-y-2">
+                                                <h4 className="text-xs font-bold uppercase text-stone-400 tracking-widest">{t.optB}</h4>
+                                                <ul className="text-sm space-y-2 text-stone-600">
+                                                    <li className="flex gap-2"><Icon name="CheckCircle" size={14} className="text-green-600 mt-0.5 shrink-0" /> {t.smart1}</li>
+                                                    <li className="flex gap-2"><Icon name="CheckCircle" size={14} className="text-green-600 mt-0.5 shrink-0" /> {t.smart2}</li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
-                                )}
+                                </div>
 
-                                {activeTab === 'restaurants-detail' && (
-                                    <div className="space-y-10 pb-10">
-                                        <div className="px-2">
-                                            <h2 className="font-serif text-3xl text-[#064e3b]">Bordighera</h2>
-                                            <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mt-1">Ristoranti Consigliati</p>
-                                        </div>
+                                <div className="space-y-4">
+                                    <h3 className="font-serif text-xl px-2">{t.videoTutorial}</h3>
+                                    <div className="video-container shadow-xl">
+                                        <video controls poster="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
+                                            <source src="https://bordigherasuite.com/wp-content/uploads/2026/03/Check-in-1.1-720.mp4" type="video/mp4" />
+                                            {t.videoError}
+                                        </video>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-4 bg-stone-100 rounded-2xl italic text-[11px] text-stone-500 text-center">
+                                    {t.lockboxHint}
+                                </div>
+                            </div>
+                        )}
 
-                                        {restaurants.map((cat, idx) => (
-                                            <div key={idx} className="space-y-4">
-                                                <h3 className="flex items-center gap-2 font-serif text-xl text-stone-800 px-2">
-                                                    <Icon name={cat.icon} size={20} className="text-[#064e3b]" />
-                                                    {cat.category}
-                                                </h3>
-                                                <div className="space-y-4">
-                                                    {cat.items.map((res, i) => (
-                                                        <div key={i} className="bg-white rounded-[32px] p-6 border border-stone-100 shadow-sm space-y-4">
-                                                            <div>
-                                                                <h4 className="font-bold text-stone-900 text-lg leading-tight">{res.name}</h4>
-                                                                <p className="text-xs text-[#064e3b] font-medium mt-1 italic leading-relaxed">"{res.comment}"</p>
-                                                            </div>
-                                                            <div className="pt-2 border-t border-stone-50 space-y-3">
-                                                                <div className="flex items-start gap-2 text-[11px] text-stone-400 leading-tight">
-                                                                    <Icon name="MapPin" size={14} className="shrink-0 mt-0.5" />
-                                                                    <span>{res.address}</span>
-                                                                </div>
-                                                                <button 
-                                                                    onClick={() => triggerMaps(res.maps, res.name)}
-                                                                    className="w-full py-3 bg-stone-50 text-[#064e3b] rounded-2xl text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-stone-100 transition-colors"
-                                                                >
-                                                                    <Icon name="Map" size={14} /> Vedi su Google Maps
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                        {activeTab === 'wifi-detail' && renderSubPage(
+                            <div className="space-y-6">
+                                <SectionTitle title={t.wifi} subtitle="Network" />
+                                <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm text-center">
+                                    <div className="space-y-2 mb-8">
+                                        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4">{t.selectNet}</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {wifiNetworks.map(net => (
+                                                <div key={net} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl text-xs font-medium">
+                                                    <span>{net}</span>
+                                                    <Icon name="Check" size={14} className="text-green-600" />
                                                 </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="pt-6 border-t border-stone-100">
+                                        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">{t.unifiedPass}</p>
+                                        <div className="flex justify-between items-center p-5 bg-[#064e3b]/5 rounded-2xl border border-[#064e3b]/10">
+                                            <span className="font-mono font-bold text-xl text-[#064e3b]">{wifiPassword}</span>
+                                            <button onClick={() => copyToClipboard(wifiPassword)} className="p-3 bg-white rounded-xl shadow-sm active:scale-90 transition-all">
+                                                <Icon name="Copy" size={20} className={copySuccess ? "text-green-600" : "text-[#064e3b]"} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'waste-detail' && renderSubPage(
+                            <div className="space-y-8 text-stone-700 pb-10">
+                                <SectionTitle title={t.waste} subtitle={t.wasteTitle} />
+                                
+                                <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
+                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" />
+                                    <div className="p-8 space-y-6">
+                                        <div className="space-y-2">
+                                            <h3 className="font-bold text-lg text-stone-900 leading-tight">{t.wasteIntro}</h3>
+                                            <p className="text-sm text-stone-500 leading-relaxed italic">{t.wasteEco}</p>
+                                        </div>
+                                        <p className="text-sm leading-relaxed">{t.wasteLoc}</p>
+                                        <div className="space-y-3">
+                                            {t.wasteItems.map(item => (
+                                                <div key={item} className="flex items-center gap-3 p-3 bg-stone-50 rounded-2xl text-[11px] font-bold uppercase tracking-wider text-stone-600">
+                                                    <div className="w-2 h-2 rounded-full bg-[#064e3b]" />
+                                                    {item}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#064e3b] text-white p-8 rounded-[40px] shadow-lg space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Icon name="QrCode" size={24} className="text-stone-200" />
+                                        <h3 className="font-bold text-sm uppercase tracking-[0.15em]">{t.qrTitle}</h3>
+                                    </div>
+                                    <p className="text-sm leading-relaxed opacity-90">{t.qrInfo}</p>
+                                    <button 
+                                        onClick={() => triggerAction('link', qrCodeLink, t.qrTitle, t.modalQrMsg)}
+                                        className="w-full py-4 bg-white text-[#064e3b] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm"
+                                    >
+                                        <Icon name="ExternalLink" size={14} /> {t.qrBtn}
+                                    </button>
+                                </div>
+
+                                <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800 text-center">
+                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
+                                    <div className="p-8 space-y-6">
+                                        <div className="space-y-2">
+                                            <h3 className="font-bold text-lg text-stone-900 leading-tight">{t.ecoPos}</h3>
+                                            <p className="text-xs text-stone-400">{t.ecoPosSub}</p>
+                                        </div>
+                                        <div className="w-full h-48 rounded-[32px] overflow-hidden shadow-inner bg-stone-100">
+                                            <iframe src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" className="w-full h-full border-none"></iframe>
+                                        </div>
+                                        <button 
+                                            onClick={() => triggerAction('maps', "https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9", t.ecoPos, t.modalMapsMsg)} 
+                                            className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-all uppercase tracking-wider text-xs flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="Map" size={16} /> {t.mapsBtn}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'extra-detail' && renderSubPage(
+                            <div className="space-y-6">
+                                <SectionTitle title={t.extra} subtitle="Hotel Amenities" />
+                                <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6">
+                                    <div className="grid grid-cols-1 gap-3 text-sm">
+                                        {t.extraItems.map(item => (
+                                            <div key={item} className="flex items-center gap-3 p-4 bg-stone-50 rounded-2xl font-medium">
+                                                <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" /> {item}
                                             </div>
                                         ))}
                                     </div>
-                                )}
+                                    <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}`, t.extra, t.modalStaffMsg)} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                                        {t.extraBtn}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
-                                {activeTab === 'wifi-detail' && (
-                                    <div className="space-y-6 text-stone-800">
-                                        <h2 className="font-serif text-3xl text-[#064e3b]">Wi-Fi</h2>
-                                        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-sm space-y-6 text-center">
-                                            <div>
-                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4">Reti del Palazzo</p>
-                                                <div className="grid grid-cols-1 gap-2 text-left sm:text-center">
-                                                    {wifiNetworks.map(net => (
-                                                        <div key={net} className="flex items-center gap-2 p-2 bg-stone-50/50 rounded-lg text-sm">
-                                                            <Icon name="Check" size={14} className="text-green-600 shrink-0" />
-                                                            {net}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="pt-4 border-t border-stone-100">
-                                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Password unificata</p>
-                                                <div className="flex justify-between items-center p-6 bg-[#fdfcf8] rounded-2xl border border-stone-100">
-                                                    <span className="font-mono font-bold text-xl text-[#064e3b]">{wifiPassword}</span>
-                                                    <button onClick={() => copyToClipboard(wifiPassword)} className="p-3 bg-white rounded-xl shadow-sm active:scale-90 transition-transform">
-                                                        <Icon name="Copy" size={20} className={copySuccess ? "text-green-600" : "text-[#064e3b]"} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-stone-400 italic">Connessione in fibra ottica gratuita ad alta velocità.</p>
+                        {activeTab === 'checkout-detail' && renderSubPage(
+                            <div className="space-y-6">
+                                <SectionTitle title={t.checkout} subtitle={t.coTitle} />
+                                <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-8 text-stone-700">
+                                    <div className="space-y-8 text-sm">
+                                        <div className="flex gap-4 p-4 bg-stone-50 rounded-2xl items-start">
+                                            <Icon name="Clock" className="text-[#064e3b] shrink-0 mt-0.5" /> 
+                                            <p className="font-medium">{t.coTime}</p>
+                                        </div>
+                                        <div className="flex gap-4 p-4 bg-stone-50 rounded-2xl items-start">
+                                            <Icon name="Briefcase" className="text-[#064e3b] shrink-0 mt-0.5" /> 
+                                            <p className="font-medium">{t.coLuggage}</p>
+                                        </div>
+                                        <div className="flex gap-4 p-4 bg-stone-50 rounded-2xl items-start">
+                                            <Icon name="Key" className="text-[#064e3b] shrink-0 mt-0.5" /> 
+                                            <p className="font-medium">{t.coKeys}</p>
                                         </div>
                                     </div>
-                                )}
-
-                                {activeTab === 'waste-detail' && (
-                                    <div className="space-y-8 pb-10 text-stone-700">
-                                        <h2 className="font-serif text-3xl text-[#064e3b]">Gestione Rifiuti</h2>
-                                        
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800">
-                                            <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" />
-                                            <div className="p-8 space-y-4">
-                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Separare i rifiuti domestici</h3>
-                                                <p className="text-sm text-stone-500 leading-relaxed italic">Inizia la tua pratica eco-sostenibile durante il soggiorno.</p>
-                                                <p className="text-sm leading-relaxed text-stone-600">I contenitori etichettati sono posizionati <b>sotto il lavello della cucina, in un angolo dedicato o sul terrazzo</b>:</p>
-                                                <div className="grid grid-cols-2 gap-2 mt-4">
-                                                    {['Plastica e lattine', 'Vetro', 'Carta', 'Organico', 'Indifferenziato'].map(item => (
-                                                        <div key={item} className="flex items-center gap-2 p-2 bg-stone-50 rounded-xl text-[11px] font-bold uppercase tracking-tight text-stone-500">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#064e3b]" />{item}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800 text-center">
-                                            <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
-                                            <div className="p-8 space-y-4">
-                                                <h3 className="font-bold text-lg text-stone-900 leading-tight">Isola Ecologica</h3>
-                                                <div className="w-full h-48 rounded-[32px] overflow-hidden map-shadow">
-                                                    <iframe src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" className="w-full h-full border-none"></iframe>
-                                                </div>
-                                                <button onClick={() => triggerMaps("https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9", "Isola Ecologica")} className="w-full py-4 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-all uppercase tracking-wider text-xs">Apri Maps</button>
-                                            </div>
-                                        </div>
+                                    <div className="pt-4">
+                                        <button onClick={() => setShowReviewModal(true)} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold shadow-xl active:scale-95 transition-all">{t.reviewBtn}</button>
                                     </div>
-                                )}
-
-                                {activeTab === 'extra-detail' && (
-                                    <div className="space-y-6">
-                                        <h2 className="font-serif text-3xl text-[#064e3b]">Accessori Extra</h2>
-                                        <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-6 text-stone-800">
-                                            <p className="text-sm text-stone-600 leading-relaxed italic text-center">Dotazioni fornite esclusivamente su richiesta per garantire massimi spazi e ordine.</p>
-                                            <div className="space-y-3">
-                                                {['Tostapane', 'Microonde', 'Ferro e asse da stiro', 'Aspirapolvere', 'Culla e seggiolone', 'Caffettiera moka', 'Attrezzatura cucina'].map(item => (
-                                                    <div key={item} className="flex items-center gap-4 p-4 bg-stone-50/50 rounded-2xl text-sm font-medium">
-                                                        <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" />{item}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <button onClick={() => triggerWhatsApp("Buongiorno, è possibile avere degli accessori extra?")} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">Richiedi allo staff</button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {activeTab === 'checkout-detail' && (
-                                    <div className="space-y-6">
-                                        <h2 className="font-serif text-3xl text-[#064e3b]">Check-out</h2>
-                                        <div className="bg-white p-8 rounded-[40px] border border-stone-100 shadow-sm space-y-8 text-stone-700">
-                                            <div className="space-y-8 text-sm">
-                                                <div className="flex gap-4"><Icon name="Clock" className="text-[#064e3b]" /> <p>Check-out previsto entro le ore <b>10:00</b>.</p></div>
-                                                <div className="flex gap-4"><Icon name="Briefcase" className="text-[#064e3b]" /> <p>Deposito bagagli disponibile post-partenza su richiesta.</p></div>
-                                                <div className="flex gap-4"><Icon name="Key" className="text-[#064e3b]" /> <p>Lasciare le chiavi sul tavolo e chiudete la porta.</p></div>
-                                            </div>
-                                            <button onClick={() => setShowReviewModal(true)} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">Lascia una recensione</button>
-                                        </div>
-                                    </div>
-                                )}
+                                </div>
                             </div>
                         )}
                     </main>
 
-                    {/* Navigation Bar */}
-                    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-stone-100 px-6 pt-4 pb-10 flex justify-between items-center z-[100]">
-                        <button onClick={() => setActiveTab('explore')} className={`flex flex-col items-center gap-2 transition-colors ${['explore', 'restaurants-detail', 'alta-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="MapPin" size={24} strokeWidth={2.5} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">ESPLORA</span>
-                        </button>
-                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${['stays', 'wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="BookOpen" size={24} strokeWidth={2.5} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">SOGGIORNO</span>
+                    {/* Navbar */}
+                    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-nav border-t border-stone-100 px-6 pt-4 pb-10 flex justify-around items-center z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+                        <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${['stays', 'wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail', 'access-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
+                            <Icon name="Home" size={24} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">{t.navStay}</span>
                         </button>
                         <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-2 transition-colors ${activeTab === 'chat' ? 'text-[#064e3b]' : 'text-stone-300'}`}>
-                            <Icon name="MessageSquare" size={24} strokeWidth={2.5} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">CONCIERGE AI</span>
+                            <Icon name="Bot" size={24} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">{t.navAi}</span>
                         </button>
-                        <button onClick={() => triggerWhatsApp("Buongiorno, vi contatto per assistenza.")} className="flex flex-col items-center gap-2 text-stone-300 active:text-[#064e3b]">
-                            <Icon name="Phone" size={24} strokeWidth={2.5} />
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-center">STAFF</span>
+                        <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}`, t.navStaff, t.modalStaffMsg)} className="flex flex-col items-center gap-2 text-stone-300 active:text-[#064e3b]">
+                            <Icon name="MessageCircle" size={24} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">{t.navStaff}</span>
                         </button>
                     </nav>
 
-                    {/* Modal Conferma WhatsApp / Maps */}
+                    {/* External Link Modal */}
                     {externalModal.show && (
                         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
-                            <div className="bg-white rounded-[32px] p-8 w-full max-w-xs shadow-2xl text-center border border-stone-100">
-                                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${externalModal.type === 'maps' ? 'bg-blue-100 text-blue-600' : 'bg-[#25D366]/10 text-[#25D366]'}`}>
-                                    <Icon name={externalModal.type === 'maps' ? "Map" : "MessageCircle"} size={32} />
+                            <div className="bg-white rounded-[40px] p-8 w-full max-w-xs shadow-2xl text-center">
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${externalModal.type === 'maps' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
+                                    <Icon name={externalModal.type === 'maps' ? "Map" : externalModal.type === 'link' ? "ExternalLink" : "MessageCircle"} size={32} />
                                 </div>
-                                <h3 className="font-serif text-xl text-[#064e3b] mb-2 uppercase tracking-tight">{externalModal.title}</h3>
-                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic text-center px-2">{externalModal.message}</p>
+                                <h3 className="font-serif text-2xl text-[#064e3b] mb-2">{externalModal.title}</h3>
+                                <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">{externalModal.message}</p>
                                 <div className="space-y-3">
-                                    <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-transform">Sì, procedi</button>
-                                    <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-xs tracking-widest">Annulla</button>
+                                    <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg">{t.modalConfirm}</button>
+                                    <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest">{t.modalClose}</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Modal Recensione */}
+                    {/* Review Modal */}
                     {showReviewModal && (
                         <div className="fixed inset-0 z-[210] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
-                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh] text-stone-800 text-center space-y-6">
-                                <h3 className="font-serif text-2xl text-[#064e3b] leading-tight italic">Grazie per aver scelto Bordighera Suite Apartments</h3>
-                                <div className="py-6 border-y border-stone-50 space-y-4">
-                                    <p className="text-sm font-bold uppercase tracking-widest text-[#064e3b]">Ti sei trovato a tuo agio?</p>
-                                    <div className="flex justify-center gap-1 text-orange-400 text-3xl leading-none py-2">{'★★★★★'}</div>
-                                    <button onClick={() => window.open(googleReviewUrl, '_blank')} className="w-full py-5 bg-[#064e3b] text-white rounded-[24px] font-bold shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                        <Icon name="CheckCircle2" size={18} /> Lascia 5 stelle su Google
-                                    </button>
-                                </div>
-                                <div className="space-y-4 pt-4">
-                                    <p className="text-xs font-bold text-stone-900 leading-tight">Qualcosa non è stato perfetto?</p>
-                                    <button onClick={() => { triggerWhatsApp("Buongiorno, vorrei lasciarvi un feedback privato..."); setShowReviewModal(false); }} className="text-xs font-bold text-[#064e3b] underline uppercase tracking-widest active:opacity-50 transition-opacity">Inviaci un suggerimento privato</button>
-                                </div>
-                                <button onClick={() => setShowReviewModal(false)} className="text-stone-300 text-xs uppercase tracking-widest font-bold">Chiudi</button>
+                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl text-center space-y-6">
+                                <h3 className="font-serif text-3xl text-[#064e3b] italic">{t.reviewTitle}</h3>
+                                <div className="flex justify-center gap-1 text-amber-400 text-3xl py-4">★★★★★</div>
+                                <button onClick={() => window.open(googleReviewUrl, '_blank')} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold shadow-lg flex items-center justify-center gap-2">
+                                    <Icon name="Star" size={18} /> {t.reviewFive}
+                                </button>
+                                <button onClick={() => setShowReviewModal(false)} className="text-stone-400 text-xs font-bold uppercase tracking-widest">{t.reviewLater}</button>
                             </div>
                         </div>
                     )}
