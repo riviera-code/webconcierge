@@ -235,7 +235,7 @@
                 checkoutSub: "Instructions pour le départ",
                 back: "Retour",
                 important: "Important",
-                accessInfo: "Les codes d'accès personnels vous seront envoyés automatiquement après avoir complété le Fast Check-in (documents d'identité requis).",
+                accessInfo: "Les codes d'accès personnels vous seront envoyés automaticamente après avoir complété le Fast Check-in (documents d'identité requis).",
                 doorMain: "Porte Principale",
                 doorMainInfo: "Tapez le code numérique sur le clavier à l'entrée de l'immeuble.",
                 doorApp: "Accès Appartement",
@@ -576,12 +576,13 @@
             );
 
             const renderChat = () => (
-                <div className="flex flex-col h-screen bg-white">
+                <div className="flex flex-col h-screen bg-white overflow-hidden">
                     <div className="p-6 bg-white border-b border-stone-100 pt-16 shadow-sm text-center">
                         <h2 className="font-serif text-2xl text-[#064e3b]">{t.aiTitle}</h2>
                         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{t.aiSub}</p>
                     </div>
-                    <div className="flex-1 bg-stone-50 overflow-hidden" style={{ height: 'calc(100vh - 160px)' }}>
+                    {/* Added pb-[100px] to ensure the chat input is visible above the bottom navbar */}
+                    <div className="flex-1 bg-stone-50 overflow-hidden pb-[100px]">
                         <iframe 
                             src={tawkChatUrl} 
                             className="w-full h-full border-none"
