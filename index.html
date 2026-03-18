@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concierge Digitale - Bordighera Suite Apartments</title>
+    <title>Bordighera Suite Apartments - Digital Concierge</title>
     
+    <!-- Meta Tags & SEO -->
+    <meta name="description" content="Il tuo assistente personale per un soggiorno perfetto a Bordighera. Info Wi-Fi, gestione rifiuti e istruzioni di accesso per Bordighera Suite Apartments.">
+    <meta property="og:title" content="Bordighera Suite Apartments - Digital Concierge">
+    <meta property="og:description" content="Tutte le informazioni utili per il tuo soggiorno a Bordighera in un unico posto.">
+    <meta property="og:image" content="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
+    <meta property="og:type" content="website">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -82,7 +89,8 @@
         // --- Translations Data ---
         const translations = {
             it: {
-                welcome: "Benvenuti a",
+                welcome: "Bordighera Suite Apartments",
+                heroTitle: "Concierge Digitale",
                 stay: "Il tuo Soggiorno",
                 services: "Servizi & Assistenza",
                 access: "Procedura di Accesso",
@@ -146,7 +154,8 @@
                 aiSub: "Assistenza istantanea"
             },
             en: {
-                welcome: "Welcome to",
+                welcome: "Bordighera Suite Apartments",
+                heroTitle: "Digital Concierge",
                 stay: "Your Stay",
                 services: "Services & Assistance",
                 access: "Access Procedure",
@@ -210,7 +219,8 @@
                 aiSub: "Instant assistance"
             },
             fr: {
-                welcome: "Bienvenue à",
+                welcome: "Bordighera Suite Apartments",
+                heroTitle: "Concierge Numérique",
                 stay: "Votre Séjour",
                 services: "Services & Assistance",
                 access: "Procédure d'Accès",
@@ -274,7 +284,8 @@
                 aiSub: "Assistance instantanée"
             },
             de: {
-                welcome: "Willkommen in",
+                welcome: "Bordighera Suite Apartments",
+                heroTitle: "Digitaler Concierge",
                 stay: "Ihr Aufenthalt",
                 services: "Service & Hilfe",
                 access: "Zugangsverfahren",
@@ -338,7 +349,8 @@
                 aiSub: "Sofortige Hilfe"
             },
             ru: {
-                welcome: "Добро пожаловать в",
+                welcome: "Bordighera Suite Apartments",
+                heroTitle: "Цифровой консьерж",
                 stay: "Ваше пребывание",
                 services: "Услуги и помощь",
                 access: "Процедура доступа",
@@ -544,8 +556,8 @@
                         </div>
 
                         <div className="absolute inset-0 flex flex-col justify-end p-8 pb-12">
-                            <p className="text-white/70 text-[10px] font-bold uppercase tracking-[0.3em] mb-2">{t.welcome}</p>
-                            <h1 className="text-white font-serif text-4xl font-light text-shadow-strong leading-[1.15]">Bordighera Suite<br/>Apartments</h1>
+                            <p className="text-white/80 text-[11px] font-bold uppercase tracking-[0.35em] mb-2">{t.welcome}</p>
+                            <h1 className="text-white font-serif text-4xl font-light text-shadow-strong leading-[1.15] italic">{t.heroTitle}</h1>
                         </div>
                     </div>
 
