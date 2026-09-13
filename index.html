@@ -18,11 +18,12 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- React & Dependencies (pinned versions) -->
+    <!-- React & Babel -->
     <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons UMD -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         :root {
@@ -39,20 +40,20 @@
 
         .font-serif { font-family: 'Playfair Display', serif; }
 
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .fade-in { animation: fadeIn 0.35s ease-out forwards; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .text-shadow-strong {
-            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            text-shadow: 0 4px 14px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.8);
         }
 
         .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
         }
 
         .video-container {
@@ -61,6 +62,7 @@
             height: 0;
             overflow: hidden;
             border-radius: 24px;
+            background-color: #000;
         }
 
         .video-container video {
@@ -68,25 +70,14 @@
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
         }
-
-        .lang-pill {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .lang-active {
-            background-color: var(--brand-green);
-            color: white;
-            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.2);
-        }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+        const { useState, useEffect, useRef } = React;
 
-        // --- Translations Data ---
         const translations = {
             it: {
                 welcome: "Bordighera Suite Apartments",
@@ -116,8 +107,9 @@
                 lockbox3: "Digita il codice e ruota la manopola.",
                 smart1: "Digita il codice e premi conferma.",
                 smart2: "La porta si blocca da sola dopo pochi secondi.",
-                videoTutorial: "Video Tutorial",
-                videoError: "Il tuo browser non supporta il video.",
+                videoTutorial: "Video Tutorial Check-in",
+                videoDirectLink: "Apri video in una nuova scheda",
+                videoError: "Il tuo browser non supporta la riproduzione video diretta.",
                 lockboxHint: "In caso di errore sulla cassetta, premi 'C' e riprova.",
                 selectNet: "Seleziona la tua rete",
                 unifiedPass: "Password Unificata",
@@ -127,7 +119,7 @@
                 wasteLoc: "I contenitori sono sotto il lavello, in un angolo dedicato o sul terrazzo.",
                 wasteItems: ['Plastica e lattine', 'Vetro', 'Carta', 'Organico', 'Indifferenziato'],
                 qrTitle: "Apertura Cassonetti",
-                qrInfo: "Per aprire i cassonetti, utilizza il QR Code sul portachiavi dell'appartamento o il link digitale.",
+                qrInfo: "Per aprire i cassonetti dell'isola ecologica, utilizza il QR Code sul portachiavi dell'appartamento o il link digitale.",
                 qrBtn: "Apri QR Code Digitale",
                 ecoPos: "Posizione Isola Ecologica",
                 ecoPosSub: "Punto di raccolta esterno con accesso tramite QR Code.",
@@ -137,7 +129,7 @@
                 coTitle: "Partenza",
                 coTime: "Check-out previsto entro le ore 10:00.",
                 coLuggage: "Deposito bagagli disponibile su richiesta.",
-                coKeys: "Lasciare le chiavi sul tavolo e chiudete la porta.",
+                coKeys: "Lasciare le chiavi sul tavolo e chiudete la porta tirandola.",
                 reviewBtn: "Lascia una Recensione",
                 navStay: "Soggiorno",
                 navAi: "AI Concierge",
@@ -145,13 +137,15 @@
                 modalConfirm: "Apri",
                 modalClose: "Chiudi",
                 modalMapsMsg: "Vuoi aprire Google Maps per raggiungere l'isola ecologica?",
-                modalQrMsg: "Vuoi aprire il link per il QR Code digitale?",
+                modalQrMsg: "Vuoi aprire il link per visualizzare il QR Code digitale?",
                 modalStaffMsg: "Vuoi contattare il nostro staff su WhatsApp?",
                 reviewTitle: "Il vostro feedback",
                 reviewLater: "Più tardi",
-                reviewFive: "Lascia 5 stelle",
+                reviewFive: "Lascia 5 stelle su Google",
+                reviewFeedbackPriv: "Inviaci un suggerimento privato",
+                reviewCrit: "Qualcosa non è stato perfetto? La tua opinione privata è fondamentale per noi.",
                 aiTitle: "Concierge AI",
-                aiSub: "Assistenza istantanea"
+                aiSub: "Powered by Bordighera Suite Apartments"
             },
             en: {
                 welcome: "Bordighera Suite Apartments",
@@ -181,9 +175,10 @@
                 lockbox3: "Type the code and turn the knob.",
                 smart1: "Type the code and press confirm.",
                 smart2: "The door locks automatically after a few seconds.",
-                videoTutorial: "Video Tutorial",
-                videoError: "Your browser does not support the video tag.",
-                lockboxHint: "In case of typing error on the box, press 'C' and try again.",
+                videoTutorial: "Check-in Video Tutorial",
+                videoDirectLink: "Open video in a new tab",
+                videoError: "Your browser does not support direct video playback.",
+                lockboxHint: "In case of error on the lockbox, press 'C' and try again.",
                 selectNet: "Select your network",
                 unifiedPass: "Unified Password",
                 wasteTitle: "Management & Eco-Station",
@@ -202,7 +197,7 @@
                 coTitle: "Departure",
                 coTime: "Check-out is scheduled by 10:00 AM.",
                 coLuggage: "Luggage storage available upon request.",
-                coKeys: "Leave the keys on the table and close the door.",
+                coKeys: "Leave the keys on the table and pull the door shut.",
                 reviewBtn: "Leave a Review",
                 navStay: "Stay",
                 navAi: "AI Concierge",
@@ -214,9 +209,11 @@
                 modalStaffMsg: "Do you want to contact our staff on WhatsApp?",
                 reviewTitle: "Your feedback",
                 reviewLater: "Later",
-                reviewFive: "Leave 5 stars",
+                reviewFive: "Leave 5 stars on Google",
+                reviewFeedbackPriv: "Send private feedback",
+                reviewCrit: "Was something less than perfect? Your private feedback helps us improve.",
                 aiTitle: "AI Concierge",
-                aiSub: "Instant assistance"
+                aiSub: "Powered by Bordighera Suite Apartments"
             },
             fr: {
                 welcome: "Bordighera Suite Apartments",
@@ -235,7 +232,7 @@
                 checkoutSub: "Instructions pour le départ",
                 back: "Retour",
                 important: "Important",
-                accessInfo: "Les codes d'accès personnels vous seront envoyés automaticamente après avoir complété le Fast Check-in (documents d'identité requis).",
+                accessInfo: "Les codes d'accès personnels vous seront envoyés automatiquement après avoir complété le Fast Check-in.",
                 doorMain: "Porte Principale",
                 doorMainInfo: "Tapez le code numérique sur le clavier à l'entrée de l'immeuble.",
                 doorApp: "Accès Appartement",
@@ -246,8 +243,9 @@
                 lockbox3: "Tapez le code et tournez le bouton.",
                 smart1: "Tapez le code et confirmez.",
                 smart2: "La porte se verrouille seule après quelques secondes.",
-                videoTutorial: "Tutoriel Vidéo",
-                videoError: "Vidéo non supportée.",
+                videoTutorial: "Tutoriel Vidéo Check-in",
+                videoDirectLink: "Ouvrir la vidéo dans un nouvel onglet",
+                videoError: "Vidéo non supportée par le navigateur.",
                 lockboxHint: "En cas d'erreur, appuyez sur 'C' et réessayez.",
                 selectNet: "Sélectionnez votre réseau",
                 unifiedPass: "Mot de passe unifié",
@@ -267,7 +265,7 @@
                 coTitle: "Départ",
                 coTime: "Check-out avant 10h00.",
                 coLuggage: "Consigne à bagages sur demande.",
-                coKeys: "Laissez les clés sulla table et fermez la porte.",
+                coKeys: "Laissez les clés sur la table et fermez la porte.",
                 reviewBtn: "Laisser un Avis",
                 navStay: "Séjour",
                 navAi: "Concierge IA",
@@ -279,9 +277,11 @@
                 modalStaffMsg: "Contacter l'équipe sur WhatsApp ?",
                 reviewTitle: "Votre avis",
                 reviewLater: "Plus tard",
-                reviewFive: "Laisser 5 étoiles",
+                reviewFive: "Laisser 5 étoiles sur Google",
+                reviewFeedbackPriv: "Envoyer un retour privé",
+                reviewCrit: "Quelque chose n'était pas parfait ? Votre avis nous est précieux.",
                 aiTitle: "Concierge IA",
-                aiSub: "Assistance instantanée"
+                aiSub: "Powered by Bordighera Suite Apartments"
             },
             de: {
                 welcome: "Bordighera Suite Apartments",
@@ -300,7 +300,7 @@
                 checkoutSub: "Anweisungen zur Abreise",
                 back: "Zurück",
                 important: "Wichtig",
-                accessInfo: "Persönliche Zugangscodes werden nach Abschluss des Fast Check-ins (Ausweisdokumente erforderlich) automatisch versendet.",
+                accessInfo: "Persönliche Zugangscodes werden nach Abschluss des Fast Check-ins automatisch versendet.",
                 doorMain: "Haupteingang",
                 doorMainInfo: "Geben Sie den Code am Tastenfeld des Gebäudeeingangs ein.",
                 doorApp: "Wohnungszugang",
@@ -311,8 +311,9 @@
                 lockbox3: "Code eingeben und Knopf drehen.",
                 smart1: "Code eingeben und bestätigen.",
                 smart2: "Die Tür verriegelt nach wenigen Sekunden automatisch.",
-                videoTutorial: "Video-Anleitung",
-                videoError: "Video wird nicht unterstützt.",
+                videoTutorial: "Video-Anleitung Check-in",
+                videoDirectLink: "Video in neuem Tab öffnen",
+                videoError: "Video wird von diesem Browser nicht unterstützt.",
                 lockboxHint: "Bei Fehlern 'C' drücken und erneut versuchen.",
                 selectNet: "Netzwerk auswählen",
                 unifiedPass: "Einheitliches Passwort",
@@ -320,7 +321,7 @@
                 wasteIntro: "Hausmüll trennen",
                 wasteEco: "Handeln Sie während Ihres Aufenthalts umweltbewusst.",
                 wasteLoc: "Behälter befinden sich unter der Spüle oder auf der Terrasse.",
-                wasteItems: ['Plastik & Dosen', 'Glas', 'Papier', 'Bio', 'Restmüll'],
+                wasteItems: ['Plastik & Dosen', 'Bio', 'Papier', 'Glas', 'Restmüll'],
                 qrTitle: "Container öffnen",
                 qrInfo: "Nutzen Sie den QR-Code am Schlüsselbund oder den digitalen Link.",
                 qrBtn: "Digitalen QR-Code öffnen",
@@ -344,9 +345,11 @@
                 modalStaffMsg: "Personal via WhatsApp kontaktieren?",
                 reviewTitle: "Ihr Feedback",
                 reviewLater: "Später",
-                reviewFive: "5 Sterne geben",
+                reviewFive: "5 Sterne auf Google geben",
+                reviewFeedbackPriv: "Privates Feedback senden",
+                reviewCrit: "War etwas nicht perfekt? Ihre Meinung ist uns sehr wichtig.",
                 aiTitle: "KI-Concierge",
-                aiSub: "Sofortige Hilfe"
+                aiSub: "Powered by Bordighera Suite Apartments"
             },
             ru: {
                 welcome: "Bordighera Suite Apartments",
@@ -365,7 +368,7 @@
                 checkoutSub: "Инструкции при выезде",
                 back: "Назад",
                 important: "Важно",
-                accessInfo: "Персональные коды доступа будут отправлены вам автоматически только после завершения процедуры Fast Check-in (необходимы документы всех гостей).",
+                accessInfo: "Персональные коды доступа будут отправлены вам автоматически только после завершения процедуры Fast Check-in.",
                 doorMain: "Главная дверь",
                 doorMainInfo: "Введите цифровой код на панели у входа в здание.",
                 doorApp: "Вход в апартаменты",
@@ -376,8 +379,9 @@
                 lockbox3: "Введите код и поверните ручку.",
                 smart1: "Введите код и подтвердите.",
                 smart2: "Дверь заблокируется через несколько секунд.",
-                videoTutorial: "Видео-инструкция",
-                videoError: "Видео не поддерживается.",
+                videoTutorial: "Видео-инструкция Check-in",
+                videoDirectLink: "Открыть видео в новой вкладке",
+                videoError: "Видео не поддерживается браузером.",
                 lockboxHint: "В случае ошибки нажмите 'C' и попробуйте снова.",
                 selectNet: "Выберите сеть",
                 unifiedPass: "Единый пароль",
@@ -387,7 +391,7 @@
                 wasteLoc: "Контейнеры находятся под раковиной или на террасе.",
                 wasteItems: ['Пластик и жесть', 'Стекло', 'Бумага', 'Органика', 'Прочее'],
                 qrTitle: "Открытие баков",
-                qrInfo: "Для открытия баков используйте QR-код на брелоке или цифровую ссылку.",
+                qrInfo: "Используйте QR-код на брелоке или цифровую ссылку.",
                 qrBtn: "Открыть цифровой QR-код",
                 ecoPos: "Местоположение эко-зоны",
                 ecoPosSub: "Внешний пункт сбора, доступ по QR-коду.",
@@ -409,9 +413,11 @@
                 modalStaffMsg: "Связаться с персоналом в WhatsApp?",
                 reviewTitle: "Ваш отзыв",
                 reviewLater: "Позже",
-                reviewFive: "Поставить 5 звезд",
+                reviewFive: "Поставить 5 звезд на Google",
+                reviewFeedbackPriv: "Отправить личный отзыв",
+                reviewCrit: "Что-то пошло не так? Ваше мнение очень важно для нас.",
                 aiTitle: "ИИ-Консьерж",
-                aiSub: "Мгновенная помощь"
+                aiSub: "Powered by Bordighera Suite Apartments"
             }
         };
 
@@ -423,25 +429,56 @@
             { id: 'ru', flag: '🇷🇺', label: 'RU' }
         ];
 
-        // --- Custom Icon Component ---
+        /**
+         * Componente Icon con rendering isolato per nodo.
+         * Risolve race-conditions e normalizza Trash2 -> trash-2.
+         */
         const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
             const ref = useRef(null);
 
             useEffect(() => {
-                const renderIcon = () => {
-                    if (window.lucide && ref.current) {
-                        ref.current.innerHTML = '';
-                        const iconEl = document.createElement('i');
-                        const lucideName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-                        iconEl.setAttribute('data-lucide', lucideName);
-                        ref.current.appendChild(iconEl);
-                        
+                let isMounted = true;
+
+                const render = () => {
+                    if (!window.lucide || !ref.current || !isMounted) return false;
+
+                    // Formatta correttamente: Trash2 -> trash-2, ArrowLeft -> arrow-left
+                    const kebab = name
+                        .replace(/([a-zA-Z])([0-9])/g, '$1-$2')
+                        .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+                        .toLowerCase();
+
+                    const pascal = name.charAt(0).toUpperCase() + name.slice(1);
+                    const iconDef = window.lucide[pascal] || 
+                                    (window.lucide.icons && (window.lucide.icons[pascal] || window.lucide.icons[kebab]));
+
+                    // Se createElement è supportato, crea direttamente il nodo SVG
+                    if (window.lucide.createElement && iconDef) {
+                        try {
+                            const svg = window.lucide.createElement(iconDef, {
+                                width: size,
+                                height: size,
+                                'stroke-width': strokeWidth,
+                                class: className
+                            });
+                            if (ref.current && isMounted) {
+                                ref.current.innerHTML = '';
+                                ref.current.appendChild(svg);
+                                return true;
+                            }
+                        } catch (e) {}
+                    }
+
+                    // Fallback circoscritto ESCLUSIVAMENTE al nodo corrente
+                    if (ref.current && isMounted) {
+                        ref.current.innerHTML = `<i data-lucide="${kebab}"></i>`;
                         window.lucide.createIcons({
-                            attrs: { 
-                                width: size, 
-                                height: size, 
-                                "stroke-width": strokeWidth,
-                                class: className 
+                            root: ref.current,
+                            attrs: {
+                                width: size,
+                                height: size,
+                                'stroke-width': strokeWidth,
+                                class: className
                             }
                         });
                         return true;
@@ -449,15 +486,28 @@
                     return false;
                 };
 
-                if (!renderIcon()) {
-                    const interval = setInterval(() => {
-                        if (renderIcon()) clearInterval(interval);
+                if (!render()) {
+                    const timer = setInterval(() => {
+                        if (render()) clearInterval(timer);
                     }, 50);
-                    return () => clearInterval(interval);
+                    return () => {
+                        isMounted = false;
+                        clearInterval(timer);
+                    };
                 }
+
+                return () => {
+                    isMounted = false;
+                };
             }, [name, size, className, strokeWidth]);
 
-            return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
+            return (
+                <span 
+                    ref={ref} 
+                    className={`inline-flex items-center justify-center shrink-0 ${className}`} 
+                    style={{ width: size, height: size }} 
+                />
+            );
         };
 
         const App = () => {
@@ -467,12 +517,13 @@
             const [externalModal, setExternalModal] = useState({ show: false, type: '', url: '', title: '', message: '' });
             const [showReviewModal, setShowReviewModal] = useState(false);
 
-            const t = translations[lang];
+            const t = translations[lang] || translations.it;
 
             const staffPhoneNumber = "393891131311";
             const tawkChatUrl = "https://tawk.to/chat/5ce3314b2846b90c57af8b85/1dbbqa0t0";
             const googleReviewUrl = "https://g.page/r/CSI2adO9stnNEAE/review";
             const qrCodeLink = "https://riviera-code.github.io/codicefiscale/";
+            const videoUrl = "https://bordigherasuite.com/wp-content/uploads/2026/03/Check-in-1.1-720.mp4";
             
             const wifiNetworks = [
                 "La Maison du Monde", "Parrots&Palms", "Pepe Nero", "Mediterraneo", 
@@ -489,7 +540,7 @@
                     document.execCommand('copy');
                     setCopySuccess(true);
                     setTimeout(() => setCopySuccess(false), 2000);
-                } catch (err) { console.error('Copy error', err); }
+                } catch (err) {}
                 document.body.removeChild(textArea);
             };
 
@@ -503,12 +554,12 @@
             };
 
             const LanguageSwitcher = () => (
-                <div className="flex justify-center items-center gap-1 p-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                <div className="flex justify-center items-center gap-1 p-1 bg-white/15 backdrop-blur-md rounded-full border border-white/25 shadow-sm">
                     {languages.map(l => (
                         <button
                             key={l.id}
                             onClick={() => setLang(l.id)}
-                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold tracking-tight transition-all flex items-center gap-1.5 ${lang === l.id ? 'bg-white text-[#064e3b]' : 'text-white hover:bg-white/10'}`}
+                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold tracking-tight transition-all flex items-center gap-1.5 ${lang === l.id ? 'bg-white text-[#064e3b] shadow-sm' : 'text-white hover:bg-white/10'}`}
                         >
                             <span>{l.flag}</span>
                             <span>{l.label}</span>
@@ -548,9 +599,8 @@
                             alt="Bordighera Suite Apartments" 
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                         
-                        {/* Persistent Language Switcher on Home */}
                         <div className="absolute top-6 left-0 right-0 flex justify-center z-20">
                             <LanguageSwitcher />
                         </div>
@@ -576,12 +626,11 @@
             );
 
             const renderChat = () => (
-                <div className="flex flex-col h-screen bg-white overflow-hidden">
+                <div className="flex flex-col h-[100dvh] bg-white overflow-hidden">
                     <div className="p-6 bg-white border-b border-stone-100 pt-16 shadow-sm text-center">
                         <h2 className="font-serif text-2xl text-[#064e3b]">{t.aiTitle}</h2>
                         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{t.aiSub}</p>
                     </div>
-                    {/* Added pb-[100px] to ensure the chat input is visible above the bottom navbar */}
                     <div className="flex-1 bg-stone-50 overflow-hidden pb-[100px]">
                         <iframe 
                             src={tawkChatUrl} 
@@ -603,7 +652,6 @@
                             <span className="font-bold text-xs uppercase tracking-wider">{t.back}</span>
                         </button>
                         
-                        {/* Minified Lang Switcher for Subpages */}
                         <div className="flex gap-1">
                             {languages.map(l => (
                                 <button 
@@ -629,7 +677,38 @@
                         {activeTab === 'access-detail' && renderSubPage(
                             <div className="space-y-8 text-stone-800">
                                 <SectionTitle title={t.access} subtitle="Check-in" />
-                                
+
+                                {/* 1. Video Tutorial posizionato in cima */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 px-2">
+                                        <Icon name="Play" size={18} className="text-[#064e3b]" />
+                                        <h3 className="font-serif text-xl">{t.videoTutorial}</h3>
+                                    </div>
+                                    <div className="video-container shadow-xl">
+                                        <video 
+                                            controls 
+                                            playsInline 
+                                            webkit-playsinline="true"
+                                            preload="metadata"
+                                            poster="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg"
+                                        >
+                                            <source src={videoUrl} type="video/mp4" />
+                                            {t.videoError}
+                                        </video>
+                                    </div>
+                                    <div className="text-center pt-1">
+                                        <a 
+                                            href={videoUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-[11px] font-bold text-[#064e3b] underline uppercase tracking-wider inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+                                        >
+                                            <Icon name="ExternalLink" size={13} /> {t.videoDirectLink}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* 2. Avviso Fast Check-in */}
                                 <div className="bg-[#064e3b]/5 p-6 rounded-[32px] border border-[#064e3b]/10 space-y-4">
                                     <div className="flex items-center gap-3 text-[#064e3b]">
                                         <Icon name="Info" size={20} />
@@ -640,6 +719,7 @@
                                     </p>
                                 </div>
 
+                                {/* 3. Istruzioni Passo-Passo */}
                                 <div className="space-y-6">
                                     <div className="p-6 bg-white rounded-[32px] border border-stone-100 shadow-sm space-y-4">
                                         <div className="flex items-center gap-4">
@@ -675,16 +755,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="font-serif text-xl px-2">{t.videoTutorial}</h3>
-                                    <div className="video-container shadow-xl">
-                                        <video controls poster="https://bordigherasuite.com/wp-content/uploads/2023/04/IMG_6744-scaled.jpg">
-                                            <source src="https://bordigherasuite.com/wp-content/uploads/2026/03/Check-in-1.1-720.mp4" type="video/mp4" />
-                                            {t.videoError}
-                                        </video>
-                                    </div>
-                                </div>
                                 
                                 <div className="p-4 bg-stone-100 rounded-2xl italic text-[11px] text-stone-500 text-center">
                                     {t.lockboxHint}
@@ -692,6 +762,7 @@
                             </div>
                         )}
 
+                        {}
                         {activeTab === 'wifi-detail' && renderSubPage(
                             <div className="space-y-6">
                                 <SectionTitle title={t.wifi} subtitle="Network" />
@@ -725,7 +796,7 @@
                                 <SectionTitle title={t.waste} subtitle={t.wasteTitle} />
                                 
                                 <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden">
-                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" />
+                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/raccolta-differenziata-cucina.avif" className="w-full h-48 object-cover" alt="Differenziata" />
                                     <div className="p-8 space-y-6">
                                         <div className="space-y-2">
                                             <h3 className="font-bold text-lg text-stone-900 leading-tight">{t.wasteIntro}</h3>
@@ -751,21 +822,21 @@
                                     <p className="text-sm leading-relaxed opacity-90">{t.qrInfo}</p>
                                     <button 
                                         onClick={() => triggerAction('link', qrCodeLink, t.qrTitle, t.modalQrMsg)}
-                                        className="w-full py-4 bg-white text-[#064e3b] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm"
+                                        className="w-full py-4 bg-white text-[#064e3b] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
                                     >
                                         <Icon name="ExternalLink" size={14} /> {t.qrBtn}
                                     </button>
                                 </div>
 
                                 <div className="bg-white rounded-[40px] border border-stone-100 shadow-sm overflow-hidden text-stone-800 text-center">
-                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" />
+                                    <img src="https://bordigherasuite.com/wp-content/uploads/2024/06/20240604_163608-768x1024.jpg" className="w-full h-64 object-cover" alt="Isola Ecologica" />
                                     <div className="p-8 space-y-6">
                                         <div className="space-y-2">
                                             <h3 className="font-bold text-lg text-stone-900 leading-tight">{t.ecoPos}</h3>
                                             <p className="text-xs text-stone-400">{t.ecoPosSub}</p>
                                         </div>
                                         <div className="w-full h-48 rounded-[32px] overflow-hidden shadow-inner bg-stone-100">
-                                            <iframe src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" className="w-full h-full border-none"></iframe>
+                                            <iframe src="https://maps.google.com/maps?q=43.7829802884844,7.656043608039313&z=17&output=embed" className="w-full h-full border-none" title="Mappa Isola Ecologica"></iframe>
                                         </div>
                                         <button 
                                             onClick={() => triggerAction('maps', "https://maps.app.goo.gl/2jsAx6V44kBaY3Hd9", t.ecoPos, t.modalMapsMsg)} 
@@ -785,17 +856,18 @@
                                     <div className="grid grid-cols-1 gap-3 text-sm">
                                         {t.extraItems.map(item => (
                                             <div key={item} className="flex items-center gap-3 p-4 bg-stone-50 rounded-2xl font-medium">
-                                                <Icon name="CheckCircle2" size={18} className="text-[#064e3b]" /> {item}
+                                                <Icon name="CheckCircle" size={18} className="text-[#064e3b]" /> {item}
                                             </div>
                                         ))}
                                     </div>
-                                    <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}`, t.extra, t.modalStaffMsg)} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                                    <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}?text=Buongiorno,%20vorrei%20richiedere%20alcuni%20accessori%20extra`, t.extra, t.modalStaffMsg)} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
                                         {t.extraBtn}
                                     </button>
                                 </div>
                             </div>
                         )}
 
+                        {}
                         {activeTab === 'checkout-detail' && renderSubPage(
                             <div className="space-y-6">
                                 <SectionTitle title={t.checkout} subtitle={t.coTitle} />
@@ -822,7 +894,7 @@
                         )}
                     </main>
 
-                    {/* Navbar */}
+                    {/* Bottom Floating Navigation Bar */}
                     <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-nav border-t border-stone-100 px-6 pt-4 pb-10 flex justify-around items-center z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
                         <button onClick={() => setActiveTab('stays')} className={`flex flex-col items-center gap-2 transition-colors ${['stays', 'wifi-detail', 'waste-detail', 'extra-detail', 'checkout-detail', 'access-detail'].includes(activeTab) ? 'text-[#064e3b]' : 'text-stone-300'}`}>
                             <Icon name="Home" size={24} />
@@ -832,13 +904,13 @@
                             <Icon name="Bot" size={24} />
                             <span className="text-[9px] font-bold uppercase tracking-widest">{t.navAi}</span>
                         </button>
-                        <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}`, t.navStaff, t.modalStaffMsg)} className="flex flex-col items-center gap-2 text-stone-300 active:text-[#064e3b]">
+                        <button onClick={() => triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}?text=Buongiorno,%20vi%20contatto%20dal%20Web%20Concierge.`, t.navStaff, t.modalStaffMsg)} className="flex flex-col items-center gap-2 text-stone-300 active:text-[#064e3b]">
                             <Icon name="MessageCircle" size={24} />
                             <span className="text-[9px] font-bold uppercase tracking-widest">{t.navStaff}</span>
                         </button>
                     </nav>
 
-                    {/* External Link Modal */}
+                    {/* External Link Confirmation Modal */}
                     {externalModal.show && (
                         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
                             <div className="bg-white rounded-[40px] p-8 w-full max-w-xs shadow-2xl text-center">
@@ -848,23 +920,38 @@
                                 <h3 className="font-serif text-2xl text-[#064e3b] mb-2">{externalModal.title}</h3>
                                 <p className="text-stone-500 text-sm mb-8 leading-relaxed italic">{externalModal.message}</p>
                                 <div className="space-y-3">
-                                    <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg">{t.modalConfirm}</button>
-                                    <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest">{t.modalClose}</button>
+                                    <button onClick={confirmExternal} className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all">{t.modalConfirm}</button>
+                                    <button onClick={() => setExternalModal({ ...externalModal, show: false })} className="w-full py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest active:scale-95 transition-all">{t.modalClose}</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Review Modal */}
+                    {/* Review Modal con Stelle Unicode */}
                     {showReviewModal && (
                         <div className="fixed inset-0 z-[210] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm fade-in">
-                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl text-center space-y-6">
+                            <div className="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl text-center space-y-5">
                                 <h3 className="font-serif text-3xl text-[#064e3b] italic">{t.reviewTitle}</h3>
-                                <div className="flex justify-center gap-1 text-amber-400 text-3xl py-4">★★★★★</div>
-                                <button onClick={() => window.open(googleReviewUrl, '_blank')} className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold shadow-lg flex items-center justify-center gap-2">
+                                <div className="flex justify-center gap-1 text-amber-400 text-3xl py-2">★★★★★</div>
+                                <button 
+                                    onClick={() => { window.open(googleReviewUrl, '_blank'); setShowReviewModal(false); }} 
+                                    className="w-full py-5 bg-[#064e3b] text-white rounded-3xl font-bold shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all"
+                                >
                                     <Icon name="Star" size={18} /> {t.reviewFive}
                                 </button>
-                                <button onClick={() => setShowReviewModal(false)} className="text-stone-400 text-xs font-bold uppercase tracking-widest">{t.reviewLater}</button>
+                                <div className="pt-2 border-t border-stone-100 text-left space-y-2">
+                                    <p className="text-[11px] text-stone-500 italic">{t.reviewCrit}</p>
+                                    <button 
+                                        onClick={() => {
+                                            setShowReviewModal(false);
+                                            triggerAction('whatsapp', `https://wa.me/${staffPhoneNumber}?text=Buongiorno,%20vorrei%20inviare%20un%20feedback%20privato`, t.navStaff, t.modalStaffMsg);
+                                        }}
+                                        className="text-xs font-bold text-[#064e3b] underline active:opacity-70"
+                                    >
+                                        {t.reviewFeedbackPriv}
+                                    </button>
+                                </div>
+                                <button onClick={() => setShowReviewModal(false)} className="text-stone-400 text-xs font-bold uppercase tracking-widest block mx-auto pt-2 active:scale-95">{t.reviewLater}</button>
                             </div>
                         </div>
                     )}
